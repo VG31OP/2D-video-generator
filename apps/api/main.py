@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
@@ -51,6 +52,26 @@ async def websocket_endpoint(websocket: WebSocket, project_id: str):
 @app.get("/api/health")
 async def health():
     return {"status": "ok", "service": "ToonForge API"}
+
+# Mount built frontend if available
+web_dist = Path(__file__).resolve().parent.parent / "web" / "dist"
+if web_dist.exists():
+    from fastapi.responses import FileResponse
+    
+    # Mount assets subfolder
+    assets_dir = web_dist / "assets"
+    if assets_dir.exists():
+        app.mount("/assets", StaticFiles(directory=str(assets_dir)), name="assets")
+        
+    @app.get("/{full_path:path}")
+    async def serve_spa(full_path: str):
+        # Ignore API and storage paths
+        if full_path.startswith("api") or full_path.startswith("storage") or full_path.startswith("ws"):
+            return None
+        target_file = web_dist / full_path
+        if target_file.is_file():
+            return FileResponse(str(target_file))
+        return FileResponse(str(web_dist / "index.html"))
 
 if __name__ == "__main__":
     import uvicorn
