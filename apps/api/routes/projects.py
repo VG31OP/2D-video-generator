@@ -20,7 +20,7 @@ class ProjectCreateRequest(BaseModel):
     title: Optional[str] = None
     language: Optional[str] = "English"
     art_style: Optional[str] = "Modern 2D Cartoon"
-    duration_seconds: Optional[int] = 45
+    duration_seconds: Optional[int] = 30
     auto_generate: Optional[bool] = True
 
 class ProjectResponse(BaseModel):
@@ -84,7 +84,8 @@ async def create_project(req: ProjectCreateRequest, db: AsyncSession = Depends(g
         "id": project.id,
         "title": project.title,
         "topic": project.topic,
-        "status": project.status
+        "status": project.status,
+        "art_style": project.art_style
     }
 
 @router.get("/{project_id}")

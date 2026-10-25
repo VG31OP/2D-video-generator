@@ -2,6 +2,7 @@ import os
 import subprocess
 from pathlib import Path
 from typing import List, Dict, Any, Optional
+from apps.api.config import settings
 
 class LipSyncProvider:
     def get_provider_name(self) -> str:
@@ -114,8 +115,9 @@ class MouthFlapFallbackProvider(LipSyncProvider):
                 shutil.copy(chosen_sprite, str(frame_path))
 
         # Compile frames into MP4 clip via FFmpeg
+        ffmpeg_bin = settings.get_ffmpeg_path()
         cmd = [
-            "ffmpeg", "-y",
+            ffmpeg_bin, "-y",
             "-framerate", str(fps),
             "-i", str(temp_frames_dir / "frame_%05d.png"),
             "-c:v", "libx264",

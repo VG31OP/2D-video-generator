@@ -7,7 +7,7 @@ from fastapi.staticfiles import StaticFiles
 
 from apps.api.config import settings, STORAGE_DIR
 from apps.api.database import init_db
-from apps.api.routes import projects, settings as settings_route
+from apps.api.routes import projects, settings as settings_route, instagram
 from apps.api.services.job_runner import manager
 
 @asynccontextmanager
@@ -18,7 +18,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="ToonForge API",
-    description="Autonomous AI Cartoon YouTube Shorts Generator",
+    description="Autonomous AI Cartoon Instagram Reels & Shorts Generator",
     version="1.0.0",
     lifespan=lifespan
 )
@@ -38,6 +38,7 @@ app.mount("/storage", StaticFiles(directory=str(STORAGE_DIR)), name="storage")
 # Include Routers
 app.include_router(projects.router)
 app.include_router(settings_route.router)
+app.include_router(instagram.router)
 
 @app.websocket("/ws/projects/{project_id}")
 async def websocket_endpoint(websocket: WebSocket, project_id: str):

@@ -4,15 +4,35 @@ from typing import List, Dict, Any
 
 class SubtitleService:
     """
-    Generates YouTube Shorts style ASS (Advanced SubStation Alpha) subtitles
-    with word-level bounce/color highlight, high-contrast outlines, and safe zones.
+    World-Class Kinetic Motion Graphics Subtitle Engine (Advanced SubStation Alpha).
+    Designed to emulate MrBeast / Hormozi / Vox high-retention social video typography:
+    - Word-level spring pop bounce animation ({\\t(0,70,\\fscx118\\fscy118)\\t(70,160,\\fscx100\\fscy100)})
+    - High-contrast 9px solid borders with 4px soft drop shadows
+    - Contextual vibrant highlight color palette (Cyber Gold, Neon Lime, Hot Coral, Electric Cyan)
+    - Instagram / TikTok / YouTube Shorts UI safe zones (MarginV = 440)
     """
-    def generate_ass_subtitles(self, scenes_data: List[Dict[str, Any]], output_path: str, video_width: int = 1080, video_height: int = 1920) -> str:
+    def __init__(self):
+        # Color palette in ASS hex format (&H00BBGGRR&)
+        self.highlight_colors = [
+            "&H002BF5FF&",  # Cyber Gold / Electric Yellow
+            "&H0033FF55&",  # Neon Lime
+            "&H00FFFF00&",  # Electric Cyan
+            "&H004444FF&",  # Hot Coral / Orange
+            "&H00B026FF&"   # Vivid Magenta
+        ]
+
+    def generate_ass_subtitles(
+        self,
+        scenes_data: List[Dict[str, Any]],
+        output_path: str,
+        video_width: int = 1080,
+        video_height: int = 1920
+    ) -> str:
         out_file = Path(output_path)
         out_file.parent.mkdir(parents=True, exist_ok=True)
         
-        # ASS Header with YouTube Shorts Styling
-        # MarginV = 380 places text in upper-middle bottom area, safe from YouTube UI overlays
+        # ASS Header with Premium Kinetic Typography Styling
+        # Arial Black provides thick, unmistakable punch for vertical mobile formats
         header = f"""[Script Info]
 ScriptType: v4.00+
 PlayResX: {video_width}
@@ -21,14 +41,15 @@ ScaledBorderAndShadow: yes
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: ShortsDefault,Arial,72,&H00FFFFFF,&H0000FFFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,8,4,2,60,60,420,1
-Style: ShortsHighlight,Arial,76,&H0000FFFF,&H00FFFFFF,&H00000000,&H80000000,-1,0,0,0,105,105,0,0,1,10,6,2,60,60,420,1
+Style: KineticBase,Arial Black,80,&H00FFFFFF,&H0000FFFF,&H00000000,&H90000000,-1,0,0,0,100,100,1,0,1,9,4,2,40,40,440,1
+Style: KineticPop,Arial Black,84,&H002BF5FF,&H00FFFFFF,&H00000000,&H90000000,-1,0,0,0,108,108,1,0,1,10,5,2,40,40,440,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 """
         events = []
         cumulative_time = 0.0
+        color_idx = 0
         
         for scene in scenes_data:
             words = scene.get("words", [])
@@ -36,28 +57,54 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
             scene_duration = scene.get("duration", 4.0)
             
             if not words and dialogue:
-                # Approximate 3-word chunks
+                # Procedural dynamic chunking for scenes without granular word stamps
                 words_list = dialogue.split()
                 chunk_size = 3
                 step = scene_duration / max(1, (len(words_list) / chunk_size))
                 for idx, i in enumerate(range(0, len(words_list), chunk_size)):
-                    chunk = " ".join(words_list[i:i+chunk_size])
+                    chunk = words_list[i:i+chunk_size]
                     st = cumulative_time + idx * step
                     et = min(cumulative_time + scene_duration, st + step)
-                    events.append(f"Dialogue: 0,{self._format_time(st)},{self._format_time(et)},ShortsDefault,,0,0,0,,{chunk.upper()}")
+                    
+                    accent_color = self.highlight_colors[color_idx % len(self.highlight_colors)]
+                    color_idx += 1
+                    
+                    # First word pops with accent color and spring scale
+                    first_word = chunk[0].upper()
+                    rest_words = " ".join(chunk[1:]).upper() if len(chunk) > 1 else ""
+                    
+                    line_text = (
+                        f"{{\\t(0,70,\\fscx118\\fscy118)\\t(70,160,\\fscx100\\fscy100)\\c{accent_color}}}{first_word}"
+                    )
+                    if rest_words:
+                        line_text += f" {{\\c&H00FFFFFF&}}{rest_words}"
+                        
+                    events.append(f"Dialogue: 0,{self._format_time(st)},{self._format_time(et)},KineticBase,,0,0,0,,{line_text}")
             else:
-                # Group words into 2-4 word phrases for punchy Shorts reading
+                # Granular word-level kinetic bounce tracking
                 idx = 0
                 while idx < len(words):
                     chunk = words[idx:idx+3]
                     if not chunk:
                         break
-                    st = cumulative_time + chunk[0]["start"]
-                    et = cumulative_time + chunk[-1]["end"]
                     
-                    # Highlight active word with animated color tag
-                    phrase_text = " ".join([w["word"] for w in chunk]).upper()
-                    events.append(f"Dialogue: 0,{self._format_time(st)},{self._format_time(et)},ShortsHighlight,,0,0,0,,{{\\c&H00FFFF&}}{phrase_text}")
+                    st = cumulative_time + chunk[0].get("start", 0.0)
+                    et = cumulative_time + chunk[-1].get("end", st + 1.2)
+                    
+                    accent_color = self.highlight_colors[color_idx % len(self.highlight_colors)]
+                    color_idx += 1
+                    
+                    # Active word pops with spring scale
+                    first_word = chunk[0].get("word", "").upper()
+                    rest_words = " ".join([w.get("word", "").upper() for w in chunk[1:]]) if len(chunk) > 1 else ""
+                    
+                    line_text = (
+                        f"{{\\t(0,70,\\fscx120\\fscy120)\\t(70,160,\\fscx100\\fscy100)\\c{accent_color}}}{first_word}"
+                    )
+                    if rest_words:
+                        line_text += f" {{\\c&H00FFFFFF&}}{rest_words}"
+                        
+                    events.append(f"Dialogue: 0,{self._format_time(st)},{self._format_time(et)},KineticBase,,0,0,0,,{line_text}")
                     idx += 3
                     
             cumulative_time += scene_duration

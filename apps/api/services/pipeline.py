@@ -1,5 +1,6 @@
 import os
 import json
+import uuid
 import asyncio
 import datetime
 from pathlib import Path
@@ -93,7 +94,7 @@ class GenerationPipeline:
             "visuals": {
                 "provider": visual_engine.get_provider_name(),
                 "mode": visual_mode,
-                "reason": "ComfyUI unavailable" if visual_mode == "FALLBACK" else "ComfyUI checkpoint active"
+                "reason": "ComfyUI checkpoint active" if visual_mode == "REAL AI" else ("Procedural 2D cartoon vector generation" if "PROCEDURAL" in visual_mode else "ComfyUI unavailable")
             },
             "voice": {
                 "provider": voice_engine.get_provider_name(),
@@ -214,9 +215,9 @@ class GenerationPipeline:
                 
                 for idx, c_data in enumerate(raw_characters):
                     c_name = c_data.get("name", f"Char_{idx+1}")
-                    char_id = f"char_{project_id[:8]}_{idx+1}"
+                    char_id = f"char_{project_id[:8]}_{idx+1}_{uuid.uuid4().hex[:6]}"
                     
-                    sprites = await visual_engine.generate_character_rig(c_data, str(chars_dir))
+                    sprites = await visual_engine.generate_character_rig(c_data, str(chars_dir), style=style)
                     
                     char_entry = Character(
                         id=char_id,
@@ -259,7 +260,7 @@ class GenerationPipeline:
                 
                 for s_idx, s_data in enumerate(raw_scenes):
                     s_num = s_data.get("scene_id", s_idx + 1)
-                    scene_id = f"scene_{project_id[:8]}_{s_num}"
+                    scene_id = f"scene_{project_id[:8]}_{s_num}_{uuid.uuid4().hex[:6]}"
                     location = s_data.get("location", "Room")
                     emotion = s_data.get("emotion", "comedy")
                     
@@ -270,7 +271,8 @@ class GenerationPipeline:
                         prompt=s_data.get("visual_prompt", ""),
                         output_path=bg_file,
                         width=settings.DEFAULT_WIDTH,
-                        height=settings.DEFAULT_HEIGHT
+                        height=settings.DEFAULT_HEIGHT,
+                        style=style
                     )
                     
                     # Characters in this scene
@@ -301,7 +303,8 @@ class GenerationPipeline:
                         emotion=emotion,
                         output_path=comp_file,
                         width=settings.DEFAULT_WIDTH,
-                        height=settings.DEFAULT_HEIGHT
+                        height=settings.DEFAULT_HEIGHT,
+                        style=style
                     )
                     
                     # Speech Dialogue Voice
@@ -343,12 +346,16 @@ class GenerationPipeline:
                         "scene_id": scene_id,
                         "scene_number": s_num,
                         "comp_path": comp_file,
+                        "bg_path": bg_file,
+                        "char_specs": scene_char_specs,
                         "audio_path": voice_file,
                         "duration": actual_duration,
                         "camera": s_data.get("camera", "slow zoom in"),
                         "sfx": s_data.get("sfx", []),
                         "dialogue": s_data.get("dialogue", ""),
-                        "words": voice_res.get("words", [])
+                        "words": voice_res.get("words", []),
+                        "emotion": emotion,
+                        "style": style
                     })
                 await session.commit()
 
@@ -376,7 +383,11 @@ class GenerationPipeline:
                     output_path=clip_out,
                     width=settings.DEFAULT_WIDTH,
                     height=settings.DEFAULT_HEIGHT,
-                    fps=settings.DEFAULT_FPS
+                    fps=settings.DEFAULT_FPS,
+                    bg_path=s.get("bg_path"),
+                    char_specs=s.get("char_specs"),
+                    emotion=s.get("emotion"),
+                    style=s.get("style")
                 )
                 scene_clips.append(clip_out)
 
@@ -400,7 +411,8 @@ class GenerationPipeline:
             self.thumb_svc.generate_thumbnail(
                 title=story_data.get("title", "Cartoon Short"),
                 character_sprite=main_sprite,
-                output_path=thumb_path
+                output_path=thumb_path,
+                style=style
             )
 
             # Step 8: Multi-Checkpoint Quality Control

@@ -38,12 +38,18 @@ pnpm-debug.log*
 *.sqlite
 *.sqlite3
 toonforge.db
+storage/*.db
+storage/*.sqlite
+storage/*.sqlite3
 
 # Storage & Temporary Project Media Artifacts
 storage/projects/*
 !storage/projects/.gitkeep
+storage/drafts/*
+!storage/drafts/.gitkeep
 storage/temp/
 .tempmediaStorage/
+scratch/
 
 # OS & IDE
 .DS_Store
@@ -53,3 +59,14 @@ Thumbs.db
 *.swp
 *.swo
 *.log
+
+# Environment, Sessions & Secrets
+.env
+.env.local
+.env.*.local
+*.env
+!.env.example
+storage/instagram*
+storage/*.json
+*.session
+*.cookies

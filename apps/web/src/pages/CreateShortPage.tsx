@@ -15,7 +15,7 @@ export const CreateShortPage: React.FC = () => {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [artStyle, setArtStyle] = useState('Modern 2D Cartoon');
   const [language, setLanguage] = useState('English');
-  const [duration, setDuration] = useState(45);
+  const [duration, setDuration] = useState(30);
 
   useEffect(() => {
     if (location.state && location.state.topic) {
@@ -46,6 +46,19 @@ export const CreateShortPage: React.FC = () => {
       setIsSubmitting(false);
     }
   };
+
+  const STYLE_PRESETS = [
+    { id: 'Modern 2D Cartoon', name: 'Modern 2D', icon: '🎨', badge: 'Crisp Vectors' },
+    { id: 'Pixel Art 16-Bit Arcade', name: 'Pixel Art', icon: '👾', badge: '16-Bit Retro' },
+    { id: 'Dark Noir Detective', name: 'Dark Noir', icon: '🕵️', badge: 'Dramatic B&W' },
+    { id: 'Comic Book Pop Art', name: 'Comic Pop', icon: '💥', badge: 'Halftone Dots' },
+    { id: 'Cyberpunk Neon Animated', name: 'Cyberpunk', icon: '⚡', badge: 'Synthwave Glow' },
+    { id: 'Chibi / Kawaii Cute', name: 'Chibi Kawaii', icon: '🐣', badge: 'Cute Pastel' },
+    { id: '90s Saturday Morning Retro', name: '90s Retro', icon: '📺', badge: 'Classic Inks' },
+    { id: 'Doodle / Stick Figure Comedy', name: 'Doodle Stick', icon: '✏️', badge: 'Notebook Line' },
+    { id: 'Anime Comic Shorts', name: 'Anime Shorts', icon: '⚔️', badge: 'Cel Shading' },
+    { id: 'Claymation / Stop-Motion Style', name: 'Claymation', icon: '🏺', badge: 'Stop-Motion' },
+  ];
 
   const sampleIdeas = [
     'A lazy student accidentally creates an AI that becomes smarter than him',
@@ -108,6 +121,44 @@ export const CreateShortPage: React.FC = () => {
           </div>
         </div>
 
+        {/* Visual Cartoon Style Grid */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+              <span>Choose Animation / Cartoon Style</span>
+              <span className="text-pink-400 font-semibold lowercase">({artStyle})</span>
+            </span>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+            {STYLE_PRESETS.map((preset) => {
+              const isSelected = artStyle === preset.id;
+              return (
+                <button
+                  key={preset.id}
+                  type="button"
+                  onClick={() => setArtStyle(preset.id)}
+                  className={`p-3 rounded-2xl border text-left transition-all relative overflow-hidden group ${
+                    isSelected
+                      ? 'bg-purple-600/20 border-pink-500 shadow-lg shadow-pink-500/20 ring-1 ring-pink-500/50'
+                      : 'bg-dark-900/70 border-slate-800 hover:border-slate-700 hover:bg-dark-900'
+                  }`}
+                >
+                  <div className="text-xl mb-1">{preset.icon}</div>
+                  <div className={`text-xs font-bold truncate ${isSelected ? 'text-white' : 'text-slate-300'}`}>
+                    {preset.name}
+                  </div>
+                  <div className="text-[10px] text-slate-400 truncate">
+                    {preset.badge}
+                  </div>
+                  {isSelected && (
+                    <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-pink-400 shadow-sm shadow-pink-400" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         {/* Advanced Settings Drawer */}
         <div className="border-t border-slate-800/80 pt-4">
           <button
@@ -129,10 +180,16 @@ export const CreateShortPage: React.FC = () => {
                   onChange={(e) => setArtStyle(e.target.value)}
                   className="w-full bg-dark-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-purple-500"
                 >
-                  <option value="Modern 2D Cartoon">Modern 2D Cartoon (Default)</option>
-                  <option value="Anime Comic Shorts">Anime Comic Shorts</option>
-                  <option value="Retro Lo-Fi Cartoon">Retro Lo-Fi Cartoon</option>
-                  <option value="Cyberpunk Animated">Cyberpunk Animated</option>
+                  <option value="Modern 2D Cartoon">Modern 2D Cartoon (Crisp Vectors - Default)</option>
+                  <option value="Anime Comic Shorts">Anime Comic Shorts (Action Lines & Cel Shading)</option>
+                  <option value="90s Saturday Morning Retro">90s Saturday Morning Retro (Classic Inks & Bold Lines)</option>
+                  <option value="Chibi / Kawaii Cute">Chibi / Kawaii Cute (Expressive & Playful)</option>
+                  <option value="Comic Book Pop Art">Comic Book Pop Art (Vintage Halftone Dots)</option>
+                  <option value="Cyberpunk Neon Animated">Cyberpunk Neon Animated (Synthwave Glow & Dystopian)</option>
+                  <option value="Dark Noir Detective">Dark Noir Detective (High-Contrast Dramatic Shadows)</option>
+                  <option value="Doodle / Stick Figure Comedy">Doodle / Stick Figure Comedy (Viral Minimalist)</option>
+                  <option value="Pixel Art 16-Bit Arcade">Pixel Art 16-Bit Arcade (Retro Video Game)</option>
+                  <option value="Claymation / Stop-Motion Style">Claymation / Stop-Motion Style (Tactile Textured)</option>
                 </select>
               </div>
 
@@ -157,8 +214,8 @@ export const CreateShortPage: React.FC = () => {
                   onChange={(e) => setDuration(parseInt(e.target.value))}
                   className="w-full bg-dark-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-purple-500"
                 >
-                  <option value={30}>30 Seconds (Fast Paced)</option>
-                  <option value={45}>45 Seconds (Recommended)</option>
+                  <option value={30}>30 Seconds (Fast Paced - Recommended)</option>
+                  <option value={45}>45 Seconds (Standard)</option>
                   <option value={60}>60 Seconds (Full Story)</option>
                 </select>
               </div>

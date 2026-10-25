@@ -1,7 +1,9 @@
 import os
+import asyncio
 import subprocess
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
+from apps.api.config import settings
 
 class VideoService:
     def __init__(self, width: int = 1080, height: int = 1920, fps: int = 30):
@@ -9,54 +11,76 @@ class VideoService:
         self.height = height
         self.fps = fps
 
-    def render_scene_clip(self, image_path: str, duration: float, camera_motion: str, output_path: str) -> str:
+    def render_scene_clip(
+        self,
+        image_path: str,
+        duration: float,
+        camera_motion: str,
+        output_path: str,
+        bg_path: Optional[str] = None,
+        char_specs: Optional[List[Dict[str, Any]]] = None,
+        emotion: Optional[str] = None,
+        style: Optional[str] = None
+    ) -> str:
         """
-        Renders an animated 2D motion-comic scene video clip from a static composite frame.
+        Renders an animated 2D motion-comic scene video clip using SeniorMotionDirectorEngine.
         """
-        out_file = Path(output_path)
-        out_file.parent.mkdir(parents=True, exist_ok=True)
+        from apps.api.providers.animation_provider import SeniorMotionDirectorEngine
+        engine = SeniorMotionDirectorEngine()
         
-        frames = max(1, int(duration * self.fps))
-        
-        # Build zoompan filter based on camera motion
-        if "push" in camera_motion:
-            # Dramatic push in
-            zp = f"zoompan=z='min(zoom+0.0022,1.25)':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d={frames}:s={self.width}x{self.height}:fps={self.fps}"
-        elif "pan" in camera_motion:
-            # Subtle horizontal pan
-            zp = f"zoompan=z=1.12:x='min((on/{frames})*(iw-iw/zoom),iw-iw/zoom)':y='ih/2-(ih/zoom/2)':d={frames}:s={self.width}x{self.height}:fps={self.fps}"
-        elif "shake" in camera_motion:
-            # Impact camera shake
-            zp = f"zoompan=z=1.06:x='iw/2-(iw/zoom/2)+sin(on*2.5)*8':y='ih/2-(ih/zoom/2)+cos(on*3.0)*8':d={frames}:s={self.width}x{self.height}:fps={self.fps}"
+        # Run async engine in event loop if needed
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            
+        if loop.is_running():
+            import concurrent.futures
+            with concurrent.futures.ThreadPoolExecutor() as pool:
+                res = pool.submit(
+                    asyncio.run,
+                    engine.render_scene_animation(
+                        image_path=image_path,
+                        duration=duration,
+                        camera_motion=camera_motion,
+                        output_path=output_path,
+                        width=self.width,
+                        height=self.height,
+                        fps=self.fps,
+                        bg_path=bg_path,
+                        char_specs=char_specs,
+                        emotion=emotion,
+                        style=style
+                    )
+                ).result()
+                return res
         else:
-            # Default slow Ken Burns zoom
-            zp = f"zoompan=z='min(zoom+0.0010,1.15)':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d={frames}:s={self.width}x{self.height}:fps={self.fps}"
-
-        cmd = [
-            "ffmpeg", "-y",
-            "-loop", "1",
-            "-i", image_path,
-            "-vf", f"{zp},format=yuv420p",
-            "-t", f"{duration:.3f}",
-            "-c:v", "libx264",
-            "-pix_fmt", "yuv420p",
-            "-r", str(self.fps),
-            "-preset", "veryfast",
-            "-crf", "22",
-            str(out_file)
-        ]
-        
-        subprocess.run(cmd, capture_output=True, text=True, check=True)
-        return str(out_file)
+            return loop.run_until_complete(
+                engine.render_scene_animation(
+                    image_path=image_path,
+                    duration=duration,
+                    camera_motion=camera_motion,
+                    output_path=output_path,
+                    width=self.width,
+                    height=self.height,
+                    fps=self.fps,
+                    bg_path=bg_path,
+                    char_specs=char_specs,
+                    emotion=emotion,
+                    style=style
+                )
+            )
 
     def assemble_final_short(self, scene_clips: List[str], audio_path: str, subtitle_ass_path: str, output_path: str) -> str:
         """
-        Concatenates all scene clips, muxes master audio, and applies dynamic ASS subtitles.
-        Optimized for high-quality 1080x1920 30fps YouTube Shorts with compact file size (10-25 MB).
+        Concatenates all scene clips, muxes master audio, and applies dynamic kinetic ASS subtitles.
+        Optimized for high-quality 1080x1920 30fps vertical Shorts/Reels with compact file size (10-25 MB).
         """
         out_file = Path(output_path).resolve()
         out_file.parent.mkdir(parents=True, exist_ok=True)
         work_dir = out_file.parent
+        ffmpeg_bin = settings.get_ffmpeg_path()
         
         # 1. Create concat list
         concat_list_file = work_dir / "scenes_concat.txt"
@@ -77,7 +101,7 @@ class VideoService:
                 shutil.copy(str(sub_path), str(local_sub))
                 
                 cmd = [
-                    "ffmpeg", "-y",
+                    ffmpeg_bin, "-y",
                     "-f", "concat",
                     "-safe", "0",
                     "-i", "scenes_concat.txt",
@@ -100,7 +124,7 @@ class VideoService:
 
         if not rendered:
             cmd_direct = [
-                "ffmpeg", "-y",
+                ffmpeg_bin, "-y",
                 "-f", "concat",
                 "-safe", "0",
                 "-i", "scenes_concat.txt",

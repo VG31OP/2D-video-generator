@@ -5,6 +5,7 @@ from typing import List, Dict, Any
 from apps.api.providers.voice_provider import EdgeTTSVoiceProvider, VoiceProvider
 from apps.api.providers.sfx_provider import SFXProvider
 from apps.api.providers.music_provider import MusicProvider
+from apps.api.config import settings
 
 class AudioService:
     def __init__(self, voice_provider: VoiceProvider = None, sfx_provider: SFXProvider = None, music_provider: MusicProvider = None):
@@ -88,8 +89,9 @@ class AudioService:
         num_streams = len(mix_inputs)
         filter_complex.append(f"{''.join(mix_inputs)}amix=inputs={num_streams}:duration=longest:dropout_transition=2[outa]")
         
+        ffmpeg_bin = settings.get_ffmpeg_path()
         cmd = [
-            "ffmpeg", "-y",
+            ffmpeg_bin, "-y",
             *inputs,
             "-filter_complex", "".join(filter_complex),
             "-map", "[outa]",

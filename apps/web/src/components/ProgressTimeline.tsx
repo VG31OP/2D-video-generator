@@ -72,7 +72,7 @@ export const ProgressTimeline: React.FC<ProgressTimelineProps> = ({
           <div className="p-2.5 rounded-xl bg-dark-900/70 border border-slate-800 flex flex-col justify-between">
             <span className="text-[10px] text-slate-400 uppercase font-semibold">Story / Script</span>
             <span className="font-bold text-slate-200 mt-1 truncate">
-              {providers?.story?.includes('Ollama') ? 'Ollama' : 'Smart Cartoon'}
+              {providers?.story?.includes('Gemini') ? 'Google Gemini' : (providers?.story?.includes('Ollama') ? 'Ollama' : 'Smart Cartoon')}
             </span>
             <span className={`text-[10px] font-mono font-semibold mt-0.5 ${providers?.story?.includes('REAL AI') ? 'text-emerald-400' : 'text-amber-400'}`}>
               {providers?.story?.includes('REAL AI') ? 'REAL AI' : 'FALLBACK'}
@@ -84,8 +84,8 @@ export const ProgressTimeline: React.FC<ProgressTimelineProps> = ({
             <span className="font-bold text-slate-200 mt-1 truncate">
               {providers?.visuals?.includes('ComfyUI') ? 'ComfyUI' : 'ToonVector'}
             </span>
-            <span className={`text-[10px] font-mono font-semibold mt-0.5 ${providers?.visuals?.includes('REAL AI') ? 'text-emerald-400' : 'text-amber-400'}`}>
-              {providers?.visuals?.includes('REAL AI') ? 'REAL AI' : 'FALLBACK'}
+            <span className={`text-[10px] font-mono font-semibold mt-0.5 ${providers?.visuals?.includes('REAL AI') ? 'text-emerald-400' : 'text-cyan-400'}`}>
+              {providers?.visuals?.includes('REAL AI') ? 'REAL AI' : (providers?.visuals?.includes('PROCEDURAL') ? 'PROCEDURAL 2D' : 'TOON VECTOR')}
             </span>
           </div>
 
@@ -104,8 +104,8 @@ export const ProgressTimeline: React.FC<ProgressTimelineProps> = ({
             <span className="font-bold text-slate-200 mt-1 truncate">
               {providers?.animation?.includes('Local AI') ? 'AI Diffusion' : 'Motion Comic'}
             </span>
-            <span className={`text-[10px] font-mono font-semibold mt-0.5 ${providers?.animation?.includes('REAL AI') ? 'text-emerald-400' : 'text-amber-400'}`}>
-              {providers?.animation?.includes('REAL AI') ? 'REAL AI' : 'FALLBACK'}
+            <span className={`text-[10px] font-mono font-semibold mt-0.5 ${providers?.animation?.includes('REAL AI') ? 'text-emerald-400' : 'text-purple-400'}`}>
+              {providers?.animation?.includes('REAL AI') ? 'REAL AI' : (providers?.animation?.includes('MOTION') ? 'MOTION COMIC' : 'PROCEDURAL')}
             </span>
           </div>
         </div>

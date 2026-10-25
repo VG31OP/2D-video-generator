@@ -43,8 +43,8 @@ export const Navbar: React.FC = () => {
         {caps && (
           <div className="hidden md:flex items-center gap-2 px-3 py-1 rounded-full bg-dark-900 border border-slate-800 text-[11px] font-mono text-slate-400">
             <div className="flex items-center gap-1">
-              <span className={`w-2 h-2 rounded-full ${caps.llm.ollama_available ? 'bg-emerald-400' : 'bg-purple-400'}`}></span>
-              <span>LLM: {caps.llm.ollama_available ? 'Ollama' : 'Smart Engine'}</span>
+              <span className={`w-2 h-2 rounded-full ${caps.llm.gemini_available ? 'bg-blue-400' : (caps.llm.ollama_available ? 'bg-emerald-400' : 'bg-purple-400')}`}></span>
+              <span>LLM: {caps.llm.gemini_available ? 'Gemini' : (caps.llm.ollama_available ? 'Ollama' : 'Smart Engine')}</span>
             </div>
             <span className="text-slate-700">|</span>
             <div className="flex items-center gap-1">

@@ -76,6 +76,9 @@ export interface Project {
 }
 
 export interface Settings {
+  llm_provider?: string;
+  gemini_api_key?: string;
+  gemini_model?: string;
   ollama_base_url: string;
   ollama_model: string;
   image_provider: string;
@@ -103,6 +106,10 @@ export interface SystemCapabilities {
     vram_total_gb: number;
   };
   llm: {
+    selected_provider?: string;
+    gemini_available?: boolean;
+    gemini_configured?: boolean;
+    gemini_model?: string;
     ollama_available: boolean;
     ollama_url: string;
     configured_model?: string;

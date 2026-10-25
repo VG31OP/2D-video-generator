@@ -75,6 +75,18 @@ export async function testOllamaConnection(url: string): Promise<{ connected: bo
   return res.json();
 }
 
+export async function testGeminiConnection(
+  apiKey?: string,
+  model?: string
+): Promise<{ connected: boolean; model?: string; displayName?: string; error?: string }> {
+  const res = await fetch(`${API_BASE}/settings/test-gemini`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ api_key: apiKey, model }),
+  });
+  return res.json();
+}
+
 export function subscribeToProjectProgress(
   projectId: string,
   onProgress: (data: any) => void
@@ -118,4 +130,55 @@ export function subscribeToProjectProgress(
       ws.close();
     }
   };
+}
+
+// Instagram Automation API
+export async function fetchInstagramStatus(): Promise<{
+  authenticated: boolean;
+  profile?: {
+    username: string;
+    full_name: string;
+    follower_count: number;
+    following_count: number;
+    media_count: number;
+    profile_pic_url: string;
+    biography: string;
+    is_verified: boolean;
+  };
+  message?: string;
+  error?: string;
+}> {
+  const res = await fetch(`${API_BASE}/instagram/status`);
+  return res.json();
+}
+
+export async function launchInstagramBrowserLogin(): Promise<{ status: string; message: string }> {
+  const res = await fetch(`${API_BASE}/instagram/login/launch-browser`, { method: 'POST' });
+  if (!res.ok) throw new Error('Failed to launch browser login');
+  return res.json();
+}
+
+export async function uploadToInstagramReels(projectId: string, caption?: string): Promise<any> {
+  const res = await fetch(`${API_BASE}/instagram/upload`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ project_id: projectId, caption }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: 'Failed to upload to Instagram Reels' }));
+    throw new Error(err.detail || 'Failed to upload to Instagram Reels');
+  }
+  return res.json();
+}
+
+export async function fetchInstagramReels(count: number = 10): Promise<{ reels: any[] }> {
+  const res = await fetch(`${API_BASE}/instagram/reels?count=${count}`);
+  if (!res.ok) throw new Error('Failed to fetch reels');
+  return res.json();
+}
+
+export async function deleteInstagramReel(mediaId: string): Promise<any> {
+  const res = await fetch(`${API_BASE}/instagram/reels/${mediaId}`, { method: 'DELETE' });
+  if (!res.ok) throw new Error('Failed to delete reel');
+  return res.json();
 }

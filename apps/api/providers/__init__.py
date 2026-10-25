@@ -1,4 +1,4 @@
-from apps.api.providers.llm_provider import LLMProvider, OllamaLLMProvider, SmartCartoonEngineLLMProvider, LLMFactory
+from apps.api.providers.llm_provider import LLMProvider, GeminiLLMProvider, OllamaLLMProvider, SmartCartoonEngineLLMProvider, LLMFactory
 from apps.api.providers.voice_provider import VoiceProvider, EdgeTTSVoiceProvider, FallbackVoiceProvider, KokoroVoiceProvider, PiperVoiceProvider, VoiceFactory
 from apps.api.providers.visual_provider import VisualProvider, ToonVectorVisualProvider, ComfyUIVisualProvider, VisualFactory
 from apps.api.providers.lip_sync_provider import LipSyncProvider, RealLipSyncProvider, MouthFlapFallbackProvider, MouthFlapLipSyncProvider, LipSyncFactory
@@ -9,6 +9,7 @@ from apps.api.providers.system_detector import detect_system_capabilities
 
 __all__ = [
     "LLMProvider",
+    "GeminiLLMProvider",
     "OllamaLLMProvider",
     "SmartCartoonEngineLLMProvider",
     "LLMFactory",

@@ -3,6 +3,7 @@ import uuid
 import datetime
 from typing import Dict, Any, Set
 from fastapi import WebSocket
+from sqlalchemy import select
 from apps.api.database import AsyncSessionLocal
 from apps.api.models.schema import Project, GenerationJob
 from apps.api.services.pipeline import GenerationPipeline
@@ -43,6 +44,17 @@ pipeline_instance = GenerationPipeline()
 async def start_generation_job(project_id: str):
     job_id = str(uuid.uuid4())
     async with AsyncSessionLocal() as session:
+        # Prevent spawning duplicate parallel jobs on the same project
+        running_res = await session.execute(
+            select(GenerationJob).where(
+                GenerationJob.project_id == project_id,
+                GenerationJob.status == "Running"
+            )
+        )
+        existing_job = running_res.scalars().first()
+        if existing_job:
+            return existing_job.id
+
         job = GenerationJob(
             id=job_id,
             project_id=project_id,
@@ -67,7 +79,8 @@ async def start_generation_job(project_id: str):
 
 async def _run_pipeline_task(project_id: str):
     try:
-        await pipeline_instance.execute_project_pipeline(
+        pipeline = GenerationPipeline()
+        await pipeline.execute_project_pipeline(
             project_id=project_id,
             db_session_factory=AsyncSessionLocal,
             progress_callback=manager.broadcast_progress

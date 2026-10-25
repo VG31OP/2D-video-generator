@@ -6,7 +6,7 @@ import struct
 import wave
 import subprocess
 from pathlib import Path
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, Tuple
 from apps.api.config import settings
 
 VOICE_MAP = {
@@ -211,8 +211,9 @@ class EdgeTTSVoiceProvider(VoiceProvider):
             if pause_before > 0.05 or pause_after > 0.05:
                 delay_ms = int(pause_before * 1000)
                 pad_after = pause_after
+                ffmpeg_bin = settings.get_ffmpeg_path()
                 cmd = [
-                    "ffmpeg", "-y",
+                    ffmpeg_bin, "-y",
                     "-i", str(raw_tts_file),
                     "-af", f"adelay={delay_ms}|{delay_ms},apad=pad_dur={pad_after:.2f}",
                     "-c:a", "libmp3lame",
@@ -250,15 +251,41 @@ class EdgeTTSVoiceProvider(VoiceProvider):
             )
 
     def _get_audio_duration(self, file_path: str) -> float:
+        # 1. Pure Python wave module if WAV
+        if file_path.endswith(".wav"):
+            try:
+                with wave.open(file_path, "rb") as wf:
+                    return wf.getnframes() / float(wf.getframerate())
+            except Exception:
+                pass
+
+        # 2. Try ffprobe if available
         try:
-            cmd = [
-                "ffprobe", "-v", "error", "-show_entries", "format=duration",
-                "-of", "default=noprint_wrappers=1:nokey=1", file_path
-            ]
-            res = subprocess.run(cmd, capture_output=True, text=True, check=True)
-            return float(res.stdout.strip())
+            import shutil
+            ffprobe_bin = shutil.which(settings.FFPROBE_PATH) or shutil.which("ffprobe")
+            if ffprobe_bin:
+                cmd = [
+                    ffprobe_bin, "-v", "error", "-show_entries", "format=duration",
+                    "-of", "default=noprint_wrappers=1:nokey=1", file_path
+                ]
+                res = subprocess.run(cmd, capture_output=True, text=True, check=True)
+                return float(res.stdout.strip())
         except Exception:
-            return 3.5
+            pass
+
+        # 3. Fallback to parsing ffmpeg -i output
+        try:
+            ffmpeg_bin = settings.get_ffmpeg_path()
+            res = subprocess.run([ffmpeg_bin, "-i", file_path], capture_output=True, text=True)
+            import re
+            m = re.search(r"Duration:\s*(\d+):(\d+):(\d+\.?\d*)", res.stderr)
+            if m:
+                h, m_mins, s = m.groups()
+                return int(h) * 3600 + int(m_mins) * 60 + float(s)
+        except Exception:
+            pass
+
+        return 3.5
 
     def _estimate_word_timing(self, text: str, total_duration: float, offset: float = 0.0) -> List[Dict[str, Any]]:
         words = text.split()
