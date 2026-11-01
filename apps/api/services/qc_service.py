@@ -28,8 +28,11 @@ class QCService:
                 errors.append(f"Rendered video too small ({file_size} bytes)")
                 
             try:
+                import shutil
+                from apps.api.config import settings
+                ffprobe_bin = shutil.which("ffprobe") or settings.FFPROBE_PATH or "ffprobe"
                 cmd = [
-                    "ffprobe", "-v", "quiet",
+                    ffprobe_bin, "-v", "quiet",
                     "-print_format", "json",
                     "-show_format",
                     "-show_streams",

@@ -108,7 +108,7 @@ class VideoService:
                     "-i", str(Path(audio_path).resolve()),
                     "-vf", "ass=subs.ass",
                     "-c:v", "libx264",
-                    "-preset", "fast",
+                    "-preset", "veryfast",
                     "-crf", "22",
                     "-pix_fmt", "yuv420p",
                     "-r", str(self.fps),
@@ -117,7 +117,7 @@ class VideoService:
                     "-shortest",
                     str(out_file.name)
                 ]
-                subprocess.run(cmd, cwd=str(work_dir), capture_output=True, text=True, check=True, timeout=90)
+                subprocess.run(cmd, cwd=str(work_dir), capture_output=True, text=True, check=True, timeout=300)
                 rendered = True
             except Exception as e:
                 print(f"[VideoService] Subtitle burn failed: {e}. Falling back to direct mux.")
@@ -130,7 +130,7 @@ class VideoService:
                 "-i", "scenes_concat.txt",
                 "-i", str(Path(audio_path).resolve()),
                 "-c:v", "libx264",
-                "-preset", "fast",
+                "-preset", "veryfast",
                 "-crf", "22",
                 "-pix_fmt", "yuv420p",
                 "-r", str(self.fps),
@@ -139,6 +139,6 @@ class VideoService:
                 "-shortest",
                 str(out_file.name)
             ]
-            subprocess.run(cmd_direct, cwd=str(work_dir), capture_output=True, text=True, check=True, timeout=90)
+            subprocess.run(cmd_direct, cwd=str(work_dir), capture_output=True, text=True, check=True, timeout=300)
             
         return str(out_file)

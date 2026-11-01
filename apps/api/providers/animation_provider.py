@@ -384,5 +384,12 @@ MotionComicFallbackProvider = SeniorMotionDirectorEngine
 
 class AnimationFactory:
     @staticmethod
-    async def get_best_provider() -> AnimationProvider:
+    async def get_best_provider(provider_type: Optional[str] = None) -> AnimationProvider:
+        prov = (provider_type or settings.ANIMATION_PROVIDER or "motion_comic").lower()
+        if "veo" in prov:
+            try:
+                from apps.api.providers.veo_provider import GoogleVeoAnimationProvider
+                return GoogleVeoAnimationProvider()
+            except Exception as e:
+                print(f"[AnimationFactory] Could not initialize GoogleVeoAnimationProvider: {e}")
         return SeniorMotionDirectorEngine()

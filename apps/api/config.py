@@ -27,14 +27,21 @@ class Settings(BaseSettings):
     
     # AI Providers Configuration
     LLM_PROVIDER: str = os.getenv("LLM_PROVIDER", "auto")            # auto, gemini, ollama, smart_cartoon
-    GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
-    GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-3.5-flash")
+    GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY", "")
+    GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
     OLLAMA_BASE_URL: str = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
     OLLAMA_MODEL: str = os.getenv("OLLAMA_MODEL", "llama3.2")
     
     IMAGE_PROVIDER: str = os.getenv("IMAGE_PROVIDER", "toon_vector") # toon_vector, comfyui, sd_webui, replicate
     VOICE_PROVIDER: str = os.getenv("VOICE_PROVIDER", "edge_tts")     # edge_tts, kokoro, piper, system
-    ANIMATION_PROVIDER: str = os.getenv("ANIMATION_PROVIDER", "motion_comic") # motion_comic, svd, animate_diff
+    ANIMATION_PROVIDER: str = os.getenv("ANIMATION_PROVIDER", "motion_comic") # motion_comic, veo, svd, animate_diff
+
+    # Google Veo Video Configuration
+    VEO_MODEL: str = os.getenv("VEO_MODEL", "veo-2.0-generate-001")
+    VEO_ASPECT_RATIO: str = os.getenv("VEO_ASPECT_RATIO", "9:16")
+    VEO_RESOLUTION: str = os.getenv("VEO_RESOLUTION", "720p") # 720p, 1080p
+    VEO_FPS: int = int(os.getenv("VEO_FPS", "24"))
+    VEO_PERSON_GENERATION: str = os.getenv("VEO_PERSON_GENERATION", "allow_adult")
     
     # Default Render Config
     DEFAULT_WIDTH: int = 1080
