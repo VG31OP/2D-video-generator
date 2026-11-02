@@ -13,6 +13,14 @@
 - **16 Senior Camera Choreographies**: Anticipation pull-back, snap punch-ins, Steadicam organic drift, whip pans with motion-blur emulation, Dutch angles with counter-balanced panning, and decaying seismic shockwave impacts.
 - **Studio Optical Vignette & Grading**: Integrated soft radial vignette (`vignette=PI/4`) to lock viewer focus onto character action, combined with studio contrast and saturation enhancement (`eq=contrast=1.05:saturation=1.08`).
 
+### 🎬 Default 3D Explainer Engine: Zack D. Films Style (`/zach-d-films`)
+- **Three.js WebGL Procedural 3D Worlds**: Real-time WebGL rendering via headless Playwright Chromium with ACES Filmic tone mapping, PCF soft shadow maps, Bokeh depth of field, and bloom.
+- **Iconic 3D Cartoon Cast**: Expressive character models with animated jaws, facial brow choreography, quiff haircuts, and goatee styling.
+- **Comfortable Zoomed-Out Framing**: Wide vertical 9:16 framing (FOV 42°–45°, camera distance Z=1.6m–2.4m) ensuring characters, props, and actions remain visible with ample safe-margin clearance above captions.
+- **Kokoro Neural TTS**: Local speech synthesis (`am_michael`, 1.12× speed) with sub-word alignment and broadcast EBU R128 loudness normalization.
+- **Autonomous Publishing**: Instant reel generation, rendering, and direct upload to Instagram Reels (`@vrj.ai`) with automated engagement boost.
+
+
 ### 🔤 Kinetic Typography Subtitle Engine (MrBeast / Vox Style)
 - **Word-Level Spring Pop Animation**: Words pop with elastic spring physics (`{\t(0,70,\fscx120\fscy120)\t(70,160,\fscx100\fscy100)}`).
 - **High-Contrast Design**: Heavy 9px pure black outline with 4px soft drop shadows and bold typography (Arial Black / Impact).
