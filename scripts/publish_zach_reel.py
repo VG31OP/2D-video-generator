@@ -27,6 +27,20 @@ def parse_args():
 
 
 DEFAULT_CAPTIONS = {
+    "zach_noise_cancelling": (
+        "Wait... is this REALLY how noise-cancelling headphones work? 🎧🤫💀\n\n"
+        "When you put on active noise-cancelling headphones, the foam padding DOES NOT physically absorb every sound wave. If it did, deafening jet engine rumbles would still blow your ears out! ✈️😱\n\n"
+        "Here is the secret physics behind the silence:\n"
+        "1️⃣ Tiny microphones on the outside listen to ambient noise in real time.\n"
+        "2️⃣ A dedicated sound processor instantly calculates the exact inverted, opposite soundwave (a mirror image!).\n"
+        "3️⃣ The internal speaker driver plays this anti-noise wave directly into your ear canal.\n"
+        "4️⃣ When the sound waves collide—the peak meets the trough—they cancel each other out in complete destructive interference! 💥➡️➖\n"
+        "5️⃣ Leaving you in pure, eerie, peaceful silence... even in the middle of a screaming airplane cabin! ☁️✨\n\n"
+        "Drop a ❤️ if you use ANC headphones every day! What gadget should we break down next? 👇\n\n"
+        "Follow @vrj.ai for more viral 3D tech explainers, science breakdowns & animation magic! 🚀\n"
+        ".\n.\n"
+        "#tech #science #noisecancelling #headphones #howitworks #3danimation #zackdfilms #audio #technology #physics #engineering #gadgets #viral #reels #vrjai #audiophile"
+    ),
     "zach_wireless_charging": (
         "Wait... is this REALLY how wireless charging works? 🔋⚡💀\n\n"
         "When you place your phone onto a wireless charging pad, electricity DOES NOT jump through the air into your battery. If it did, you'd get shocked every single time! ⚡😱\n\n"
@@ -58,6 +72,7 @@ DEFAULT_CAPTIONS = {
 }
 
 DEFAULT_COMMENTS = {
+    "zach_noise_cancelling": "Drop a ❤️ and save this! Did you know your headphones play 'anti-noise' to cancel sound? Tell us below! 👇🎧",
     "zach_wireless_charging": "Drop a ❤️ and save this! Did you think electricity jumped through the air before? Tell us below! 👇⚡",
     "zach_how_internet_works": "Drop a ❤️ and save this! Did you think your messages went through space satellites before? Tell us below! 👇"
 }
