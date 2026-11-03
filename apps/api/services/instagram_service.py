@@ -111,7 +111,9 @@ class InstagramService:
         self,
         video_path: str,
         caption: str = "",
-        thumbnail_path: Optional[str] = None
+        thumbnail_path: Optional[str] = None,
+        show_preview_in_feed: bool = True,
+        trial: bool = False
     ) -> Dict[str, Any]:
         """
         Uploads a video as an Instagram Reel (9:16 vertical video).
@@ -121,7 +123,7 @@ class InstagramService:
             raise FileNotFoundError(f"Video file not found at: {video_path}")
 
         cl = self.get_client()
-        logger.info(f"Starting Instagram Reel upload: {v_path.name}")
+        logger.info(f"Starting Instagram Reel upload: {v_path.name} (feed_preview={show_preview_in_feed}, trial={trial})")
 
         thumb_str = None
         if thumbnail_path:
@@ -134,7 +136,9 @@ class InstagramService:
             media = cl.clip_upload(
                 path=str(v_path),
                 caption=caption,
-                thumbnail=thumb_str
+                thumbnail=thumb_str,
+                show_preview_in_feed=show_preview_in_feed,
+                trial=trial
             )
 
             code = getattr(media, "code", "")
