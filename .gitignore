@@ -54,6 +54,8 @@ storage/drafts/*
 !storage/drafts/.gitkeep
 storage/reels/
 storage/temp/
+storage/remotion/
+storage/shorts/
 storage/assets/visual_cache/
 storage/assets/*.png
 storage/assets/*.jpg
@@ -61,6 +63,7 @@ storage/assets/*.jpeg
 storage/assets/*.webp
 .tempmediaStorage/
 scratch/
+*.npy
 
 # Generated Media Files (Video, Audio, Images)
 *.mp4
