@@ -1,8 +1,9 @@
 """
-Upload Zack D. Films 3D Reel to Instagram (@vrj.ai)
+Upload Zack D. Films 3D Reel to Instagram (@vrj.ai) with Automated Engagement Boost
 """
 
 import sys
+import argparse
 from pathlib import Path
 
 if sys.platform == "win32" and hasattr(sys.stdout, "buffer"):
@@ -16,19 +17,31 @@ sys.path.insert(0, str(ROOT_DIR))
 from apps.api.services.instagram_service import instagram_service
 
 
-def main():
-    video_path = ROOT_DIR / "storage" / "reels" / "zach_how_internet_works" / "zach_how_internet_works_final.mp4"
-    cover_path = ROOT_DIR / "storage" / "reels" / "zach_how_internet_works" / "cover.jpg"
+def parse_args():
+    parser = argparse.ArgumentParser(description="Publish Zack D. Films Reel to Instagram")
+    parser.add_argument("--folder", type=str, default="zach_wireless_charging", help="Folder inside storage/reels/")
+    parser.add_argument("--video", type=str, default=None, help="Explicit video filename (e.g. zach_wireless_charging_final.mp4)")
+    parser.add_argument("--caption", type=str, default=None, help="Custom caption")
+    parser.add_argument("--comment", type=str, default=None, help="Custom CTA comment")
+    return parser.parse_args()
 
-    if not video_path.exists():
-        print(f"[✗] Video file not found: {video_path}")
-        sys.exit(1)
 
-    print(f"[+] Publishing Zack D. Films Reel: {video_path.name} ({video_path.stat().st_size / 1024 / 1024:.2f} MB)")
-    if cover_path.exists():
-        print(f"[+] Custom Cover Poster: {cover_path.name}")
-
-    caption = (
+DEFAULT_CAPTIONS = {
+    "zach_wireless_charging": (
+        "Wait... is this REALLY how wireless charging works? 🔋⚡💀\n\n"
+        "When you place your phone onto a wireless charging pad, electricity DOES NOT jump through the air into your battery. If it did, you'd get shocked every single time! ⚡😱\n\n"
+        "Here is what actually happens inside:\n"
+        "1️⃣ The charging pad contains a tightly coiled copper wire.\n"
+        "2️⃣ Running electricity through this coil creates an invisible fluctuating magnetic field.\n"
+        "3️⃣ Inside your phone, a second matching copper coil catches these magnetic waves.\n"
+        "4️⃣ This changing magnetic field pushes electrons inside your phone's coil, forcing them to flow.\n"
+        "5️⃣ That motion converts magnetism back into electricity, charging your battery without a single cord! 📱✨\n\n"
+        "Drop a ❤️ if you learned something new! What tech gadget should we break down next? 👇\n\n"
+        "Follow @vrj.ai for viral 3D tech explainers, science breakdowns & animation magic! 🚀\n"
+        ".\n.\n"
+        "#tech #science #wirelesscharging #howitworks #3danimation #zackdfilms #technology #physics #engineering #gadgets #viral #reels #vrjai #animation"
+    ),
+    "zach_how_internet_works": (
         "Wait... is this REALLY how the internet actually works? 🌐💀\n\n"
         "When you send a text to someone across the world, it doesn't beam through satellites in space. Almost 99% of all internet traffic travels underground!\n\n"
         "Here is what happens behind the scenes:\n"
@@ -42,8 +55,44 @@ def main():
         ".\n.\n"
         "#tech #science #3danimation #zackdfilms #howitworks #technology #animation #viral #reels #explainer #vrjai #fiberoptic #internet #coder"
     )
+}
 
-    comment = "Drop a ❤️ and save this! Did you think your messages went through space satellites before? Tell us below! 👇"
+DEFAULT_COMMENTS = {
+    "zach_wireless_charging": "Drop a ❤️ and save this! Did you think electricity jumped through the air before? Tell us below! 👇⚡",
+    "zach_how_internet_works": "Drop a ❤️ and save this! Did you think your messages went through space satellites before? Tell us below! 👇"
+}
+
+
+def main():
+    args = parse_args()
+    reel_dir = ROOT_DIR / "storage" / "reels" / args.folder
+
+    if not reel_dir.exists():
+        print(f"[✗] Reel directory not found: {reel_dir}")
+        sys.exit(1)
+
+    if args.video:
+        video_path = reel_dir / args.video
+    else:
+        candidates = list(reel_dir.glob("*_final.mp4"))
+        if candidates:
+            video_path = candidates[0]
+        else:
+            candidates = list(reel_dir.glob("*.mp4"))
+            video_path = candidates[0] if candidates else (reel_dir / f"{args.folder}_final.mp4")
+
+    cover_path = reel_dir / "cover.jpg"
+
+    if not video_path.exists():
+        print(f"[✗] Video file not found: {video_path}")
+        sys.exit(1)
+
+    print(f"[+] Publishing Zack D. Films Reel: {video_path.name} ({video_path.stat().st_size / 1024 / 1024:.2f} MB)")
+    if cover_path.exists():
+        print(f"[+] Custom Cover Poster: {cover_path.name}")
+
+    caption = args.caption or DEFAULT_CAPTIONS.get(args.folder, DEFAULT_CAPTIONS["zach_wireless_charging"])
+    comment = args.comment or DEFAULT_COMMENTS.get(args.folder, DEFAULT_COMMENTS["zach_wireless_charging"])
 
     try:
         res = instagram_service.upload_reel(
@@ -82,4 +131,3 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
-
