@@ -1,9 +1,17 @@
-# Python
+# Python & Bytecode Cache
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
+*.egg-info/
+.installed.cfg
+*.egg
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Environments
 env/
 build/
 develop-eggs/
@@ -17,9 +25,6 @@ parts/
 sdist/
 var/
 wheels/
-*.egg-info/
-.installed.cfg
-*.egg
 .venv/
 venv/
 ENV/
@@ -49,13 +54,39 @@ storage/drafts/*
 !storage/drafts/.gitkeep
 storage/reels/
 storage/temp/
+storage/assets/visual_cache/
+storage/assets/*.png
+storage/assets/*.jpg
+storage/assets/*.jpeg
+storage/assets/*.webp
 .tempmediaStorage/
 scratch/
+
+# Generated Media Files (Video, Audio, Images)
 *.mp4
+*.mov
+*.avi
+*.mkv
+*.webm
+*.flv
 *.wav
 *.mp3
+*.aac
+*.ogg
+*.m4a
+*.flac
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.gif
+*.bmp
+*.tiff
 
-# OS & IDE
+# Base Static Audio Assets (preserve core SFX)
+!storage/assets/sfx/*.wav
+
+# OS, Logs & Temp Cache
 .DS_Store
 Thumbs.db
 .idea/
@@ -63,6 +94,8 @@ Thumbs.db
 *.swp
 *.swo
 *.log
+*.tmp
+*.temp
 
 # Environment, Sessions & Secrets
 .env
