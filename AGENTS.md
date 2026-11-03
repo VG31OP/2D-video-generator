@@ -60,3 +60,16 @@ This document provides operational context, architectural contracts, and safety 
 ### 5. Running Tests & Scripts
 - Use Python 3.12: `& "C:\Users\ROHITBHAI\AppData\Local\Programs\Python\Python312\python.exe" <script_path>`
 - Always ensure `sys.path.insert(0, ".")` or `PYTHONPATH=.` is set when running standalone scripts.
+
+### 6. Default Style & Autonomous Reel Publishing Protocol
+- **Default Animation Engine**: **Zack D. Films 3D Explainer (`/zach-d-films`)**.
+  - Three.js WebGL procedural 3D animation (Playwright Chromium headless).
+  - Voice: Kokoro Neural TTS (`am_michael`, 1.12x speed) per `artemnovitckii/claude-animation-skills`.
+  - Camera Framing: Always maintain comfortable **zoomed-out framing (FOV 42°–45°, pullback distance Z=1.6m–2.4m)** to prevent character shoulders, hands, or props from getting cropped by the narrow 9:16 vertical edges.
+  - Script Structure: 8-sentence formula: Hook -> Misconception -> "But" Twist (with dip to black) -> 4-Step Mechanism Breakdown -> Comedic/Surprise Payoff.
+  - Audio Normalization: EBU R128 loudness normalization (`loudnorm=I=-14:TP=-1.5:LRA=9`), 48kHz AAC.
+  - Subtitles: 1-to-3 word kinetic Poppins/Montserrat captions kept safely above the bottom 440px Instagram UI zone.
+- **Autonomous Trigger Contract**:
+  - Whenever the user provides a topic or title without specifying an alternate style, automatically generate the Zack D. Films 3D reel, render it, and publish it directly to Instagram (`@vrj.ai`) with automated engagement boost (like, pinned CTA comment, story share).
+  - **Zero Media & Cache in Git**: Ensure `.gitignore` ignores all generated images, MP4s, WAVs, and `storage/reels/`. Clean intermediate `silent.mp4` render passes and temporary test stills immediately.
+
