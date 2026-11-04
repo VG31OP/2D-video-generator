@@ -32,9 +32,9 @@ class Settings(BaseSettings):
     OLLAMA_BASE_URL: str = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
     OLLAMA_MODEL: str = os.getenv("OLLAMA_MODEL", "llama3.2")
     
-    IMAGE_PROVIDER: str = os.getenv("IMAGE_PROVIDER", "toon_vector") # toon_vector, comfyui, sd_webui, replicate
-    VOICE_PROVIDER: str = os.getenv("VOICE_PROVIDER", "edge_tts")     # edge_tts, kokoro, piper, system
-    ANIMATION_PROVIDER: str = os.getenv("ANIMATION_PROVIDER", "motion_comic") # motion_comic, veo, svd, animate_diff
+    IMAGE_PROVIDER: str = os.getenv("IMAGE_PROVIDER", "threejs_3d")
+    VOICE_PROVIDER: str = os.getenv("VOICE_PROVIDER", "kokoro")
+    ANIMATION_PROVIDER: str = os.getenv("ANIMATION_PROVIDER", "zach_3d")
 
     # Google Veo Video Configuration
     VEO_MODEL: str = os.getenv("VEO_MODEL", "veo-2.0-generate-001")

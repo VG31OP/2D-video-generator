@@ -2,7 +2,7 @@
 Standalone CLI: Create and Publish Zack D. Films 3D Reel
 Usage:
     python scripts/create_and_publish_zach_reel.py "Topic / Title"
-    python scripts/create_and_publish_zach_reel.py "How Solar Panels Actually Work"
+    python scripts/create_and_publish_zach_reel.py "How Solar Panels Actually Work" --no-publish
 """
 
 import sys
@@ -19,7 +19,7 @@ if sys.platform == "win32":
 ROOT_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT_DIR))
 
-from apps.api.providers.zach_engine import zach_engine
+from core.pipeline import pipeline
 
 
 def main():
@@ -28,12 +28,15 @@ def main():
     parser.add_argument("--no-publish", action="store_true", help="Only render locally, do not upload to Instagram")
 
     args = parser.parse_args()
+    publish = not args.no_publish
+
     print("=" * 70)
     print("       🚀 AUTONOMOUS 3D ZACK D. FILMS PIPELINE INITIATED       ")
-    print(f"  Topic: {args.topic}")
+    print(f"  Topic   : {args.topic}")
+    print(f"  Publish : {'YES (@vrj.ai)' if publish else 'NO (Local Only)'}")
     print("=" * 70)
 
-    res = zach_engine.build_and_publish(args.topic)
+    res = pipeline.run(topic=args.topic, publish=publish)
 
     print("\n" + "=" * 70)
     print("                 🎉 PIPELINE COMPLETE! 🎉                 ")
@@ -41,12 +44,12 @@ def main():
     print(f" Video File : {res['video_path']}")
     print(f" Cover File : {res['cover_path']}")
     print(f" Duration   : {res['duration']:.2f}s")
-    print(f" Media ID   : {res.get('media_id')}")
-    print(f" Instagram  : {res.get('reel_url')}")
+    if res.get("published"):
+        print(f" Media ID   : {res.get('media_id')}")
+        print(f" Instagram  : {res.get('reel_url')}")
     print("=" * 70)
     return 0
 
 
 if __name__ == "__main__":
     sys.exit(main())
-

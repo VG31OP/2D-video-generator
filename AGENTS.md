@@ -1,80 +1,50 @@
 # AGENTS.md — Developer & AI Agent Guidelines
 
-This document provides operational context, architectural contracts, and safety rules for AI coding assistants and developers maintaining the **ToonForge** codebase.
+This document provides operational context, architectural contracts, and safety rules for AI coding assistants (Claude Code, Antigravity, Cursor, Codex) and developers maintaining this repository.
 
 ---
 
 ## 🏛️ Repository Architecture
 
-- `apps/api/`: FastAPI asynchronous backend service.
-  - `apps/api/config.py`: Pydantic settings, platform-specific FFmpeg PATH resolution.
-  - `apps/api/database.py`: Async SQLAlchemy session factory and SQLite connection (`storage/toonforge.db`).
-  - `apps/api/models/schema.py`: Database models (`Project`, `Character`, `Scene`, `GenerationJob`).
-  - `apps/api/providers/`: Pluggable AI engine providers:
-    - `animation_provider.py`: `SeniorMotionDirectorEngine` (16 physics-based camera moves, multiplane 2.5D parallax, damped harmonic recoil).
-    - `narrative_engine.py`: Domain-aware viral script generators (AI Tools, AI Agents, Dev, Security).
-    - `visual_provider.py`: `ToonVectorVisualProvider` (10 distinct art styles) & `ComfyUIVisualProvider`.
-    - `voice_provider.py`: `EdgeTTSVoiceProvider` neural speech synthesis with word timestamps.
-    - `sfx_provider.py` & `music_provider.py`: Procedural sound and mood-adaptive ducked BGM.
-  - `apps/api/services/`:
-    - `pipeline.py`: `GenerationPipeline` orchestrating the 7-step autonomous short generation.
-    - `subtitle_service.py`: `SubtitleService` producing word-level spring pop ASS subtitles.
-    - `video_service.py`: `VideoService` handling clip concatenation and subtitle burn-in.
-    - `instagram_service.py`: `InstagramService` managing private Instagram API uploads, session reuse, and post-reel engagement.
-- `apps/web/`: React + TypeScript + Vite frontend dashboard.
-  - `apps/web/src/pages/`: `CreateShortPage`, `ResultPage`, `SettingsPage`.
-  - `apps/web/src/services/api.ts`: API client connecting to backend endpoints.
-- `scripts/`: Standalone automation scripts:
-  - `scripts/instagram_auth.py`: Playwright browser session capture.
-  - `scripts/instagram_manager.py`: Instagram CLI for status, uploads, comments, and story sharing.
-  - `scripts/generate_and_publish_trending_reels.py`: Autonomous multi-reel generator & Instagram publisher.
-  - `scripts/generate_trending_draft.py`: Offline trending reel generator saving directly to draft.
-- `storage/`: Local data directory (ignored by git, except static assets).
+- `main.py`: Primary CLI entrypoint for generating and publishing Zack D. Films 3D explainer reels.
+- `setup.py`, `setup.bat`, `setup.sh`: 1-click cross-platform environment installer (Python deps, Playwright browser, Three.js template).
+- `core/`: Dedicated, portable engine package:
+  - `config.py`: Dynamic discovery of Kokoro ONNX models, Chromium browser, FFmpeg, and paths.
+  - `script_engine.py`: Viral 8-sentence Zack D. formula (Hook -> Misconception -> Twist -> 4-Step Mechanism -> Payoff).
+  - `voice_engine.py`: Kokoro ONNX (`am_michael` 1.12x) with Edge-TTS auto-fallback + word timestamps.
+  - `scene_builder.py`: Three.js procedural WebGL scene builder with Apple Fluid camera easing.
+  - `renderer.py`: Playwright WebGL frame capture + FFmpeg EBU R128 normalization (`-14 LUFS, -1.5 dBFS TP`) + Lanczos 1080x1920 scaling + thumbnail generator.
+  - `instagram.py`: Instagrapi wrapper with interactive/saved credential management, Reel upload, and auto-boost.
+  - `pipeline.py`: Master orchestrator class connecting all modules.
+- `templates/zach_engine/`: Bundled Three.js WebGL engine template with shaders, human rig, materials, textures, and `render.mjs`.
+- `scripts/`: Reusable management CLIs and analytics (no one-off per-video scripts).
+- `storage/`: Local data directory (100% ignored by git).
 
 ---
 
 ## ⚠️ Critical Development Rules
 
 ### 1. Security & Credentials
-- **NEVER** commit `.env`, `instagram_session.json`, `instagram_cookies.json`, `instagram_browser_state.json`, `*.db`, `*.sqlite`, or draft video files to git.
+- **NEVER** commit `.env`, `instagram_session.json`, `instagram_cookies.json`, `*.db`, `*.sqlite`, `.onnx`, `.bin`, or video files to git.
 - Verify `git status` before committing any code changes.
-- All session files must remain in `storage/` and are strictly ignored via `.gitignore`.
+- All session and media files must remain in `storage/` and are strictly ignored via `.gitignore`.
 
 ### 2. Windows Platform Specifics
-- **FFmpeg PATH**: On Windows, FFmpeg is located in `apps/api/config.py` using `os.pathsep` directory splitting.
-- **Python Unicode Output**: Always wrap `sys.stdout` and `sys.stderr` in `io.TextIOWrapper(encoding='utf-8')` in scripts that output emojis or special characters on Windows consoles.
-- **File Paths in FFmpeg Concat**: Always convert Windows backslashes (`\`) to forward slashes (`/`) when writing `scenes_concat.txt` or subtitle file references for FFmpeg.
+- **Python Unicode Output**: Always configure console output using `sys.stdout.reconfigure(encoding="utf-8", errors="replace")`. Never use fragile detached buffer wrappers.
+- **FFmpeg PATH**: Dynamically resolved via `core.config.get_ffmpeg_path()`.
 
-### 3. Motion & Animation Standards
+### 3. Motion & Camera Framing Standards
+- **Framing (Mandatory)**: Always maintain comfortable **zoomed-out framing (FOV 42°–45°, pullback distance Z=1.6m–2.4m)** to prevent character shoulders, hands, or props from getting cropped by the narrow 9:16 vertical edges.
 - All camera movements should use physics-based easing curves (Apple Fluid / Emil Kowalski design principles):
-  - Use Damped Harmonic Oscillators (`(1 - e^{-kt} \cos(\omega t))`) for snap/shock reveals.
-  - Use Cubic Hermite S-Curves (`3\tau^2 - 2\tau^3`) for camera pans and pushes.
+  - Cubic Hermite S-Curves (`3\tau^2 - 2\tau^3`) for camera pans and pushes.
+  - Damped Harmonic Oscillators for snap/shock reveals.
   - Never introduce jarring, un-eased linear zooms.
-  - Multiplane parallax is favored when both background and character layers are available.
 
-### 4. Subtitle Typography
-- Subtitles must be generated using `SubtitleService` with ASS format (`v4.00+`).
-- Word-level bounce must be preserved (`{\t(0,70,\fscx120\fscy120)\t(70,160,\fscx100\fscy100)}`).
-- Keep safe margin `MarginV = 440` to avoid being blocked by Instagram/TikTok UI controls.
+### 4. Audio & Subtitles
+- Audio: 48 kHz AAC stereo, normalized to EBU R128 standard (`loudnorm=I=-14:TP=-1.5:LRA=9`).
+- Subtitles: 1-to-3 word kinetic captions kept safely above the bottom 440px Instagram UI zone (`MarginV = 440`).
 
-### 5. Running Tests & Scripts
-- Use Python 3.10+ (Python 3.12 recommended): `python <script_path>`
-- Always ensure `sys.path.insert(0, ".")` or `PYTHONPATH=.` is set when running standalone scripts.
-
-### 6. Default Style & Autonomous Reel Publishing Protocol
-- **Default Animation Engine**: **Zack D. Films 3D Explainer (`/zach-d-films`)**.
-  - Three.js WebGL procedural 3D animation (Playwright Chromium headless).
-  - Voice: Kokoro Neural TTS (`am_michael`, 1.12x speed) per `artemnovitckii/claude-animation-skills`.
-  - Camera Framing: Always maintain comfortable **zoomed-out framing (FOV 42°–45°, pullback distance Z=1.6m–2.4m)** to prevent character shoulders, hands, or props from getting cropped by the narrow 9:16 vertical edges.
-  - Script Structure: 8-sentence formula: Hook -> Misconception -> "But" Twist (with dip to black) -> 4-Step Mechanism Breakdown -> Comedic/Surprise Payoff.
-  - Audio Normalization: EBU R128 loudness normalization (`loudnorm=I=-14:TP=-1.5:LRA=9`), 48kHz AAC.
-  - Subtitles: 1-to-3 word kinetic Poppins/Montserrat captions kept safely above the bottom 440px Instagram UI zone.
-- **Autonomous Trigger Contract**:
-  - Whenever the user provides a topic or title without specifying an alternate style, automatically generate the Zack D. Films 3D reel, render it, and publish it directly to Instagram (`@vrj.ai`) with automated engagement boost (like, pinned CTA comment, story share).
-  - **Zero Media & Cache in Git**: Ensure `.gitignore` ignores all generated images, MP4s, WAVs, and `storage/reels/`. Clean intermediate `silent.mp4` render passes and temporary test stills immediately.
-
-### 7. Clean Repository & No Per-Video Scripts in Git
+### 5. Clean Repository & No Per-Video Scripts in Git
 - **NEVER create or commit one-off per-video generator scripts into `scripts/`** (e.g., `run_<topic>_pipeline.py`, `build_<topic>_reel.py`, etc.).
-- All generation must either use the generic CLI (`python scripts/create_and_publish_zach_reel.py "<Topic>"`) or keep topic-specific files strictly confined to `storage/reels/<topic>/` (which is git-ignored).
-- `scripts/` is strictly reserved for reusable, general-purpose system tools, management CLIs, and test suites.
-
+- All generation must use `python main.py "<Topic>"` or the generic CLI.
+- Topic-specific working files must remain confined to `storage/reels/<topic>/` (which is git-ignored).

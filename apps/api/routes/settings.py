@@ -16,8 +16,9 @@ def mask_key(k: str) -> str:
     return "********"
 
 ALLOWED_LLM_PROVIDERS = {"auto", "gemini", "ollama", "smart_cartoon"}
-ALLOWED_IMAGE_PROVIDERS = {"toon_vector", "comfyui", "sd_webui", "replicate"}
-ALLOWED_VOICE_PROVIDERS = {"edge_tts", "kokoro", "piper", "system"}
+ALLOWED_IMAGE_PROVIDERS = {"threejs_3d", "toon_vector", "comfyui", "sd_webui", "replicate"}
+ALLOWED_VOICE_PROVIDERS = {"kokoro", "edge_tts", "piper", "system"}
+ALLOWED_ANIMATION_PROVIDERS = {"zach_3d", "threejs_3d", "motion_comic", "veo"}
 
 class SettingsUpdateRequest(BaseModel):
     llm_provider: str = "auto"

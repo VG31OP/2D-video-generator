@@ -29,3 +29,4 @@ if %ERRORLEVEL% neq 0 (
 echo.
 echo Setup finished successfully!
 pause
+

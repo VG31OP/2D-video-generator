@@ -13,10 +13,12 @@ from pathlib import Path
 ROOT_DIR = Path(__file__).resolve().parent
 
 # Ensure UTF-8 output on Windows console
-if sys.platform == "win32" and hasattr(sys.stdout, "buffer"):
-    import io
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
 
 
 def check_python_version():
@@ -167,17 +169,17 @@ def main():
     print("                   🎉 SETUP COMPLETE! 🎉                   ")
     print("=" * 70)
     print(" You are all set! You can now run:\n")
-    print("  1. Generate a 3D Zack D. Explainer Reel:")
-    print("     python scripts/create_and_publish_zach_reel.py \"How Solar Panels Work\"\n")
-    print("  2. Connect Instagram Account:")
-    print("     python scripts/instagram_manager.py login\n")
+    print("  1. Generate 3D Zack D. Explainer & Publish to Instagram:")
+    print("     python main.py \"How Solar Panels Work\" --publish\n")
+    print("  2. Generate 3D Zack D. Explainer Locally:")
+    print("     python main.py \"Why We Dream When Sleeping\" --no-publish\n")
     print("  3. Check Instagram Profile & Stats:")
-    print("     python scripts/instagram_manager.py status\n")
-    print("  4. Launch Full Web Dashboard & API:")
-    print("     npm run dev:web   (Frontend at http://localhost:5173)")
-    print("     npm run dev:api   (Backend API at http://localhost:8000)")
+    print("     python main.py --status\n")
+    print("  4. Save as Draft:")
+    print("     python main.py \"How Touchscreens Detect Fingers\" --draft\n")
     print("=" * 70 + "\n")
 
 
 if __name__ == "__main__":
     main()
+

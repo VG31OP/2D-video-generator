@@ -20,3 +20,4 @@ fi
 python3 setup.py
 echo ""
 echo "Setup finished successfully!"
+

@@ -85,7 +85,8 @@ if (mode === 'stills') {
   const fps = Number(b || 30), dur = await page.evaluate(() => window.DURATION);
   const from = Number(c || 0), to = Math.min(Number(d || dur), dur);
   const n0 = Math.round(from * fps), n1 = Math.floor(to * fps);
-  const ff = spawn('ffmpeg', ['-y', '-v', 'error', '-f', 'image2pipe', '-framerate', String(fps), '-c:v', 'png', '-i', '-', '-c:v', 'libx264', '-preset', 'medium', '-crf', '17', '-pix_fmt', 'yuv420p', a], { stdio: ['pipe', 'inherit', 'inherit'] });
+  const ffmpegBin = process.env.FFMPEG_PATH || 'ffmpeg';
+  const ff = spawn(ffmpegBin, ['-y', '-v', 'error', '-f', 'image2pipe', '-framerate', String(fps), '-c:v', 'png', '-i', '-', '-c:v', 'libx264', '-preset', 'medium', '-crf', '17', '-pix_fmt', 'yuv420p', a], { stdio: ['pipe', 'inherit', 'inherit'] });
   const T0 = Date.now();
   for (let n = n0; n < n1; n++) {
     await page.evaluate(t => window.renderAt(t), n / fps);

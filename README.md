@@ -1,177 +1,144 @@
-# 🎬 ToonForge — Autonomous AI Cartoon Video Generator & Instagram Automation Suite
+# 🎬 Zack D. Films 3D Explainer & Autonomous Instagram Reels Suite
 
-> **Topic in → High-Retention Animated Short out.**  
-> Create viral 9:16 vertical 2D cartoon shorts with persistent characters, senior motion graphics, neural multi-voice acting, kinetic bouncing typography, dynamic SFX, sidechain ducked music, and fully autonomous Instagram publishing.
-
----
-
-## 🌟 Key Features
-
-### 🎥 Senior Motion Director Engine (20-Year Motion Designer Quality)
-- **Physics-Based Camera Mechanics**: Replaced flat linear pans with **Damped Harmonic Oscillators** and **Cubic Hermite S-Curves** (`(1 - e^{-kt} \cos(\omega t))` and `3\tau^2 - 2\tau^3`) for snap-and-settle camera recoil.
-- **2.5D Multiplane Parallax Depth**: Moves backgrounds at independent fractional velocity with subtle depth-of-field drift while foreground character rigs execute organic breathing and expressive reaction bobs.
-- **16 Senior Camera Choreographies**: Anticipation pull-back, snap punch-ins, Steadicam organic drift, whip pans with motion-blur emulation, Dutch angles with counter-balanced panning, and decaying seismic shockwave impacts.
-- **Studio Optical Vignette & Grading**: Integrated soft radial vignette (`vignette=PI/4`) to lock viewer focus onto character action, combined with studio contrast and saturation enhancement (`eq=contrast=1.05:saturation=1.08`).
-
-### 🎬 Default 3D Explainer Engine: Zack D. Films Style (`/zach-d-films`)
-- **Three.js WebGL Procedural 3D Worlds**: Real-time WebGL rendering via headless Playwright Chromium with ACES Filmic tone mapping, PCF soft shadow maps, Bokeh depth of field, and bloom.
-- **Iconic 3D Cartoon Cast**: Expressive character models with animated jaws, facial brow choreography, quiff haircuts, and goatee styling.
-- **Comfortable Zoomed-Out Framing**: Wide vertical 9:16 framing (FOV 42°–45°, camera distance Z=1.6m–2.4m) ensuring characters, props, and actions remain visible with ample safe-margin clearance above captions.
-- **Kokoro Neural TTS**: Local speech synthesis (`am_michael`, 1.12× speed) with sub-word alignment and broadcast EBU R128 loudness normalization.
-- **Autonomous Publishing**: Instant reel generation, rendering, and direct upload to Instagram Reels (`@vrj.ai`) with automated engagement boost.
-
-
-### 🔤 Kinetic Typography Subtitle Engine (MrBeast / Vox Style)
-- **Word-Level Spring Pop Animation**: Words pop with elastic spring physics (`{\t(0,70,\fscx120\fscy120)\t(70,160,\fscx100\fscy100)}`).
-- **High-Contrast Design**: Heavy 9px pure black outline with 4px soft drop shadows and bold typography (Arial Black / Impact).
-- **Vibrant Accent Palettes**: Contextual color-coded active highlights (Cyber Gold `&H002BF5FF&`, Neon Lime `&H0033FF55&`, Electric Cyan, Hot Coral, Vivid Magenta).
-- **Mobile UI Safe Zone**: Positioned at `MarginV = 440` so text is never obscured by Instagram Reels or YouTube Shorts interface buttons.
-
-### 🤖 Autonomous Instagram Reels Suite
-- **Hands-Free Authentication**: Persistent session and cookie management via browser state capture (`scripts/instagram_auth.py`).
-- **One-Command CLI Manager**: Comprehensive CLI (`scripts/instagram_manager.py`) to inspect profiles, upload reels, publish projects, like, comment, and share to story.
-- **Autonomous Post-Reel Engagement**: Automatically likes the published reel, pins a high-converting engagement comment, and reshares the reel directly to Instagram Stories with custom stickers.
-- **Draft Vault**: Dedicated draft generation and isolation (`scripts/generate_trending_draft.py`) allowing offline review before publishing.
-
-### 🧠 Domain-Aware Narrative Engine
-- **Procedural Viral Scripting**: Multi-arc story engine (`apps/api/providers/narrative_engine.py`) covering AI Tools, AI Agents, Software Development, Cybersecurity, and Universal Dynamic Arcs.
-- **Zero Script Duplication**: Dynamic scene-by-scene script synthesis that guarantees unique hooks, escalating comedic conflicts, and high-CTR punchlines for any given topic.
-
-### 🎨 10 Distinct Cartoon Visual Styles
-1. **Cyberpunk Neon Animated**: Glowing cyan/magenta visors, circuit overlays, and dark grid backgrounds.
-2. **Chibi / Kawaii Cute**: Sparkling anime eyes, soft pastel gradients, rosy blushes, and floating hearts.
-3. **Dark Noir Detective**: High-contrast black-and-white silhouettes, rain textures, and dramatic Venetian blind shadows.
-4. **Comic Book Pop Art**: Halftone Ben-Day dots, bold ink outlines, action sound effect bursts (*POW! BAM!*).
-5. **Pixel Art 16-Bit Arcade**: Chunky 16-bit retro arcade sprites and scanline grids.
-6. **90s Saturday Morning Retro**: Vintage pie-cut cartoon eyes and pastel Saturday morning warmth.
-7. **Anime Comic Shorts**: High-speed action convergence lines and expressive anime eyes.
-8. **Claymation / Stop-Motion Style**: Warm handcrafted clay borders and textured plasticine aesthetics.
-9. **Doodle / Stick Figure Comedy**: Notebook paper lined backgrounds, red margins, and sketch figures.
-10. **Modern 2D Cartoon**: Vector cel-shaded character designs with vibrant modern palettes.
+> **Topic in → Broadcast-Quality 3D Explainer Reel out.**  
+> Create viral 9:16 vertical 3D procedural cartoon explainer shorts in the signature **Zack D. Films** style (Three.js WebGL, Kokoro neural voice, word timestamps, kinetic bounce captions, zoomed-out camera framing, EBU R128 loudness normalization) and automatically publish directly to Instagram Reels (`@vrj.ai`) with automated engagement boost.
 
 ---
 
-## 🏗️ Architecture & Pipeline Flow
+## 🌟 Key Capabilities
 
-```text
-User enters Topic or CLI triggers Viral Trend
-                       ↓
-  AI Narrative Engine (Viral Hook & Multi-Arc Dialogue)
-                       ↓
-  Character Bible Generation & Multi-Expression Rigs
-                       ↓
-  2D Scene Background & Composite Generation (10 Styles)
-                       ↓
-  Edge Neural Multi-Voice Speech Synthesis & Timestamps
-                       ↓
-  Kinetic Subtitle Synchronization (Word Spring Pop ASS)
-                       ↓
-  Procedural SFX & Sidechain Ducked BGM Mix
-                       ↓
-  Senior Motion Director Engine (16 Physics Moves & 2.5D Parallax)
-                       ↓
-  FFmpeg 1080x1920 30fps Video Encoding & Quality Control
-                       ↓
-       ┌───────────────┴───────────────┐
-       ↓                               ↓
- Saved to Local Draft Vault     Instagram Reels Autonomous Suite
- (storage/drafts/...)           (Publish Reel + Pinned Comment + Story Share)
-```
+### 🎬 Signature Zack D. Films 3D Explainer Formula
+- **8-Sentence Viral Scripting**: Hook → Misconception → "But" Twist (with dip to black) → 4-Step Physical/Microscopic Mechanism Breakdown → Comedic/Surprise Payoff.
+- **Three.js WebGL Procedural 3D Worlds**: Rendered via headless Playwright Chromium with ACES Filmic tone mapping, PCF soft shadows, Bokeh depth of field, Unreal Bloom, and film grain.
+- **Comfortable Zoomed-Out 9:16 Framing (FOV 42°–45°, Pullback Z=1.6m–2.4m)**: Characters, props, and dynamic animations are never cropped or clipped by the narrow vertical 9:16 phone viewport.
+- **Apple Fluid Camera Mechanics**: Physics-based Cubic Hermite S-curves and damped harmonic oscillators for natural, organic camera motion.
+
+### 🎙️ Neural Voiceover & Kinetic Typography
+- **Kokoro Neural TTS (`am_michael` 1.12x)**: Clean, studio-grade speech synthesis with automatic fallback to Edge-TTS.
+- **Word-Level Kinetic Bounce Subtitles**: Fast-paced 1-to-3 word captions timed to speech phonemes.
+- **Mobile Safe Margin**: All text kept safely above `MarginV = 440` so buttons and account usernames never cover the captions.
+- **EBU R128 Loudness Normalization**: Master audio rendered at `-14 LUFS, -1.5 dBFS True Peak, 48kHz AAC stereo`.
+
+### 🚀 Autonomous Instagram Auto-Publish & Growth Suite
+- **Zero-Headache Authentication**: Supports saved sessions, cookies, or interactive CLI credentials prompt on first run.
+- **Autonomous Reel Upload**: Direct 1080x1920 30fps upload with custom cover thumbnail extraction and viral tech/science hashtags.
+- **Automated Algorithm Boost**: Automatically likes the reel, pins a high-converting CTA comment, and reshares the reel to Instagram Stories.
+- **Local Draft Vault**: Save renders and metadata directly to `storage/drafts/` for offline review.
 
 ---
 
-## 🚀 Quick Start (1-Click Setup)
+## ⚡ Quickstart (1-Click Setup)
 
-Anyone can clone and run this repository on Windows, macOS, or Linux in minutes with zero manual dependency hunting:
+Anyone (or AI coding assistants like Claude Code, Antigravity, Cursor, or Codex) can clone and run this repository immediately:
 
-### 1. Clone & Automated Setup
-
+### 1. Clone & Setup
 ```bash
-# Clone the repository
 git clone https://github.com/VG31OP/2D-video-generator.git
 cd 2D-video-generator
 
-# Windows (Double-click setup.bat or run via Terminal):
+# Windows (One-Click):
 setup.bat
 
 # macOS / Linux:
 chmod +x setup.sh && ./setup.sh
 
-# Or run directly via Python (Cross-platform):
+# Or directly with Python:
 python setup.py
 ```
 
-`setup.py` automatically:
-1. Validates Python version (3.10+).
-2. Installs all Python dependencies from `requirements.txt`.
-3. Installs Playwright Chromium headless binaries.
-4. Installs Three.js WebGL & React frontend npm packages.
-5. Verifies FFmpeg in your PATH (with automatic `imageio_ffmpeg` fallback).
-6. Initializes the local SQLite database and directory structure.
-7. Sets up `.env` from `.env.example`.
-
----
-
-## 🎬 Generating Viral 3D Reels
-
-To generate a broadcast-quality 3D explainer short on **any topic**:
+### 2. Generate Your First 3D Explainer Reel
 
 ```bash
-# Generate, render & publish directly to Instagram:
-python scripts/create_and_publish_zach_reel.py "How Solar Panels Actually Work"
+# Generate video locally (no Instagram upload):
+python main.py "How Solar Panels Actually Work" --no-publish
 
-# Render locally only (offline test, do not upload):
-python scripts/create_and_publish_zach_reel.py "How Touchscreens Actually Work" --no-publish
+# Generate and publish directly to Instagram Reels (@vrj.ai):
+python main.py "Why We Dream When Sleeping" --publish
+
+# Save as draft to storage/drafts/:
+python main.py "How Touchscreens Detect Your Fingers" --draft
+
+# Check Instagram account status & follower analytics:
+python main.py --status
 ```
 
 ---
 
-## 💻 Running the Web Dashboard & API
+## 🏛️ Project Architecture
 
-```bash
-# Start Web UI (http://localhost:5173)
-npm run dev:web
-
-# Start FastAPI Backend (http://localhost:8000)
-npm run dev:api
+```
+├── main.py                     # Primary CLI entrypoint (Topic -> 3D Video -> Instagram)
+├── setup.py                    # Automated cross-platform environment installer
+├── setup.bat / setup.sh        # OS one-click setup scripts
+├── requirements.txt            # Clean, pinned Python dependencies
+├── CLAUDE.md                   # Complete guidelines for Claude Code, Antigravity, and Codex
+├── AGENTS.md                   # Operational contracts, camera framing, and safety rules
+│
+├── core/                       # Autonomous Core Engine Package
+│   ├── config.py               # Dynamic path resolution (FFmpeg, Chromium, Models)
+│   ├── script_engine.py        # 8-sentence viral Zack D. formula with domain libraries
+│   ├── voice_engine.py         # Kokoro ONNX + Edge-TTS fallback + word timestamps
+│   ├── scene_builder.py        # Three.js 3D WebGL scene generator with zoomed-out framing
+│   ├── renderer.py             # Playwright WebGL frame capture + FFmpeg EBU R128 muxer
+│   ├── instagram.py            # Instagrapi client: login prompt, Reel upload, auto-boost
+│   ├── pipeline.py             # Master orchestrator class connecting all modules
+│   └── __init__.py             # Module exports
+│
+├── templates/zach_engine/      # Bundled Three.js WebGL engine template
+│   ├── render.mjs              # Playwright headless WebGL frame capturer
+│   ├── index.html              # WebGL canvas and shader setup
+│   └── src/                    # Materials, human rig, props, camera easing curves
+│
+├── scripts/                    # Reusable system tools & analytics
+│   ├── create_and_publish_zach_reel.py  # Standalone CLI wrapper
+│   ├── instagram_manager.py             # Instagram CLI (status, upload, comments, story)
+│   ├── profile_analytics.py             # Account performance & viewer analytics
+│   └── publish_draft.py                 # Publish existing drafts
+│
+└── storage/                    # Local runtime storage (ALL git-ignored)
+    ├── reels/                  # Generated video projects (storage/reels/zach_<slug>/)
+    ├── drafts/                 # Stored drafts
+    └── models/                 # Neural TTS weights (kokoro-v1.0.onnx)
 ```
 
 ---
 
-## 📱 Instagram Automation CLI
+## 📋 Command Line Reference
 
-Manage Instagram Reels directly from your terminal:
+```
+usage: main.py [-h] [--publish] [--no-publish] [--draft]
+               [--script-file SCRIPT_FILE] [--username USERNAME]
+               [--password PASSWORD] [--session-id SESSION_ID] [--status]
+               [topic]
 
-```bash
-# 1. Capture Login Session (runs Playwright browser to log in safely)
-python scripts/instagram_auth.py
+Autonomous 3D Zack D. Films explainer generator & Instagram publisher
 
-# 2. Check Instagram Profile & Auth Status
-python scripts/instagram_manager.py status
+positional arguments:
+  topic                 Topic or question for the 3D explainer short (e.g.
+                        'How Touchscreens Detect Fingers')
 
-# 3. List Recent Posts & Media
-python scripts/instagram_manager.py list-media --limit 10
-
-# 4. Generate a Trending Reel & Save to Draft (Offline)
-python scripts/generate_trending_draft.py
-
-# 5. Publish Any Project or Draft to Instagram Reels
-python scripts/instagram_manager.py publish-project <project_id>
-
-# 6. Autonomous End-to-End: Generate & Publish Multiple Trending Reels
-python scripts/generate_and_publish_trending_reels.py
+options:
+  -h, --help            show this help message and exit
+  --publish             Upload directly to Instagram Reels and execute
+                        automated engagement boost
+  --no-publish          Render the master 1080x1920 MP4 locally without
+                        uploading to Instagram
+  --draft               Save render and metadata into storage/drafts/ for
+                        review
+  --script-file SCRIPT_FILE
+                        Path to custom 8-sentence JSON script file
+  --username USERNAME   Instagram username (if not already authenticated)
+  --password PASSWORD   Instagram password (if not already authenticated)
+  --session-id SESSION_ID
+                        Instagram sessionid cookie value
+  --status              Check Instagram authentication status and profile
+                        information
 ```
 
 ---
 
-## 🔒 Security & Privacy
+## 🔒 Security & Git Hygiene
 
-- All user sessions, authentication tokens, cookies, SQLite databases (`*.db`), and generated media drafts are strictly ignored via `.gitignore`.
-- No sensitive credentials or session tokens are stored in version control.
-- Designed with zero-dependency local procedural fallbacks (ToonVector, Edge TTS, Procedural SFX) so the application functions out-of-the-box without requiring third-party cloud API keys.
-
----
-
-## 📄 License
-
-MIT License. Crafted with modern design engineering and physics-based motion choreography.
+- **Zero Media & Cache in Git**: All `.mp4`, `.wav`, `.onnx`, `.bin`, `.db`, and `.json` session files are stored in `storage/` and are strictly ignored via `.gitignore`.
+- **Reusable Tools Only**: Per-video one-off scripts are never added to `scripts/`. All generation operates through `main.py` or `core.pipeline`.
+- **Cross-Platform Compatibility**: Tested and verified on Windows 11, macOS, and Linux.
