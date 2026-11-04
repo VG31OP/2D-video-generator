@@ -58,7 +58,7 @@ This document provides operational context, architectural contracts, and safety 
 - Keep safe margin `MarginV = 440` to avoid being blocked by Instagram/TikTok UI controls.
 
 ### 5. Running Tests & Scripts
-- Use Python 3.12: `& "C:\Users\ROHITBHAI\AppData\Local\Programs\Python\Python312\python.exe" <script_path>`
+- Use Python 3.10+ (Python 3.12 recommended): `python <script_path>`
 - Always ensure `sys.path.insert(0, ".")` or `PYTHONPATH=.` is set when running standalone scripts.
 
 ### 6. Default Style & Autonomous Reel Publishing Protocol

@@ -56,6 +56,9 @@ storage/reels/
 storage/temp/
 storage/remotion/
 storage/shorts/
+storage/models/
+*.onnx
+*.bin
 storage/assets/visual_cache/
 storage/assets/*.png
 storage/assets/*.jpg

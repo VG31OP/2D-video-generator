@@ -80,61 +80,60 @@ User enters Topic or CLI triggers Viral Trend
 
 ---
 
-## 🚀 Quick Start & Local Setup
+## 🚀 Quick Start (1-Click Setup)
 
-### 1. Prerequisites
-- **Python 3.10+** (Tested on Python 3.11, 3.12, 3.14)
-- **Node.js 18+** & **npm**
-- **FFmpeg** installed and accessible in `PATH` (Run `ffmpeg -version` to verify)
+Anyone can clone and run this repository on Windows, macOS, or Linux in minutes with zero manual dependency hunting:
 
-### 2. Installation
+### 1. Clone & Automated Setup
 
 ```bash
 # Clone the repository
 git clone https://github.com/VG31OP/2D-video-generator.git
 cd 2D-video-generator
 
-# Install web frontend dependencies
-npm install --prefix apps/web
+# Windows (Double-click setup.bat or run via Terminal):
+setup.bat
 
-# Install backend dependencies
-python -m pip install fastapi uvicorn websockets pydantic pydantic-settings sqlalchemy aiosqlite pillow edge-tts httpx python-dotenv instagrapi playwright
+# macOS / Linux:
+chmod +x setup.sh && ./setup.sh
+
+# Or run directly via Python (Cross-platform):
+python setup.py
 ```
 
-### 3. Environment Configuration
+`setup.py` automatically:
+1. Validates Python version (3.10+).
+2. Installs all Python dependencies from `requirements.txt`.
+3. Installs Playwright Chromium headless binaries.
+4. Installs Three.js WebGL & React frontend npm packages.
+5. Verifies FFmpeg in your PATH (with automatic `imageio_ffmpeg` fallback).
+6. Initializes the local SQLite database and directory structure.
+7. Sets up `.env` from `.env.example`.
 
-Copy the sample environment file:
+---
+
+## 🎬 Generating Viral 3D Reels
+
+To generate a broadcast-quality 3D explainer short on **any topic**:
+
 ```bash
-cp .env.example .env
+# Generate, render & publish directly to Instagram:
+python scripts/create_and_publish_zach_reel.py "How Solar Panels Actually Work"
+
+# Render locally only (offline test, do not upload):
+python scripts/create_and_publish_zach_reel.py "How Touchscreens Actually Work" --no-publish
 ```
 
-Edit `.env` (optional for local fallbacks, or add your keys):
-```env
-APP_ENV=development
-PORT=8000
-HOST=0.0.0.0
-DATABASE_URL=sqlite+aiosqlite:///./storage/toonforge.db
-STORAGE_PATH=./storage
+---
 
-# Optional: Google Gemini API Key for neural writing
-GEMINI_API_KEY=
-GEMINI_MODEL=gemini-2.0-flash
+## 💻 Running the Web Dashboard & API
 
-# Optional: Local Ollama
-OLLAMA_BASE_URL=http://localhost:11434
-OLLAMA_MODEL=llama3.2
-```
-
-### 4. Running the Development Servers
-
-**Backend API (`http://localhost:8000`):**
 ```bash
-python -m uvicorn apps.api.main:app --host 0.0.0.0 --port 8000 --reload
-```
+# Start Web UI (http://localhost:5173)
+npm run dev:web
 
-**Web Dashboard (`http://localhost:5173`):**
-```bash
-npm --prefix apps/web run dev
+# Start FastAPI Backend (http://localhost:8000)
+npm run dev:api
 ```
 
 ---

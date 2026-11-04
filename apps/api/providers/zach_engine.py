@@ -29,11 +29,48 @@ if sys.platform == "win32" and hasattr(sys.stdout, "buffer"):
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
 
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent.parent
-SKILLS_DIR = Path(r"C:\Users\ROHITBHAI\.gemini\config\skills")
-KIT_MODELS = SKILLS_DIR / "animation-kit" / "models"
-KIT_MODULES = SKILLS_DIR / "animation-kit" / "node_modules"
-ZACH_ENGINE = SKILLS_DIR / "zach-d-films" / "engine"
-CHROME_PATH = r"C:\Users\ROHITBHAI\AppData\Local\ms-playwright\chromium-1248\chrome-win64\chrome.exe"
+TEMPLATE_DIR = ROOT_DIR / "templates" / "zach_engine"
+MODELS_DIR = ROOT_DIR / "storage" / "models"
+
+
+def find_model_paths() -> Tuple[Path, Path]:
+    """Dynamically locates Kokoro ONNX model and voices bin across system."""
+    candidates = [
+        MODELS_DIR,
+        Path.home() / ".gemini" / "config" / "skills" / "animation-kit" / "models",
+        Path.home() / ".cache" / "kokoro",
+    ]
+    for c in candidates:
+        m = c / "kokoro-v1.0.onnx"
+        v = c / "voices-v1.0.bin"
+        if m.exists() and v.exists():
+            return m, v
+    MODELS_DIR.mkdir(parents=True, exist_ok=True)
+    return MODELS_DIR / "kokoro-v1.0.onnx", MODELS_DIR / "voices-v1.0.bin"
+
+
+def find_template_dir() -> Path:
+    """Locates the bundled Three.js Zack D. Films engine template."""
+    if TEMPLATE_DIR.exists():
+        return TEMPLATE_DIR
+    skills_dir = Path.home() / ".gemini" / "config" / "skills" / "zach-d-films" / "engine"
+    if skills_dir.exists():
+        return skills_dir
+    return TEMPLATE_DIR
+
+
+def find_node_modules() -> Optional[Path]:
+    """Locates Three.js node_modules across project or system."""
+    candidates = [
+        TEMPLATE_DIR / "node_modules",
+        ROOT_DIR / "node_modules",
+        Path.home() / ".gemini" / "config" / "skills" / "animation-kit" / "node_modules",
+    ]
+    for c in candidates:
+        if c.exists() and (c / "three").exists():
+            return c
+    return None
+
 
 from kokoro_onnx import Kokoro, EspeakConfig
 import espeakng_loader
@@ -45,8 +82,9 @@ class ZachFilmsEngine:
             lib_path=espeakng_loader.get_library_path(),
             data_path=espeakng_loader.get_data_path()
         )
-        self.model_path = str(KIT_MODELS / "kokoro-v1.0.onnx")
-        self.voices_path = str(KIT_MODELS / "voices-v1.0.bin")
+        model_p, voice_p = find_model_paths()
+        self.model_path = str(model_p)
+        self.voices_path = str(voice_p)
         self._kokoro = None
 
     def get_kokoro(self) -> Kokoro:
@@ -230,10 +268,14 @@ class ZachFilmsEngine:
 
     def setup_project(self, project_dir: Path):
         """
-        Copies Three.js engine and sets up Windows junction to shared node_modules.
+        Copies Three.js engine from bundled templates and sets up cross-platform node_modules.
         """
         project_dir.mkdir(parents=True, exist_ok=True)
-        for item in ZACH_ENGINE.iterdir():
+        template_dir = find_template_dir()
+
+        for item in template_dir.iterdir():
+            if item.name == "node_modules":
+                continue
             dst = project_dir / item.name
             if item.is_dir():
                 if dst.exists():
@@ -242,70 +284,22 @@ class ZachFilmsEngine:
             else:
                 shutil.copy2(item, dst)
 
-        # Windows directory junction for node_modules
+        # Cross-platform link or install for node_modules
         dst_modules = project_dir / "node_modules"
         if not dst_modules.exists():
-            subprocess.run(["cmd", "/c", "mklink", "/J", str(dst_modules), str(KIT_MODULES)], check=True)
-
-        # Update render.mjs to use local Chromium cleanly on Windows
-        render_mjs = project_dir / "render.mjs"
-        content = render_mjs.read_text(encoding="utf-8")
-        if "fileURLToPath" not in content:
-            updated = f"""// Playwright headless WebGL renderer
-import {{ chromium }} from 'playwright';
-import http from 'node:http';
-import fs from 'node:fs';
-import path from 'node:path';
-import {{ fileURLToPath }} from 'node:url';
-import {{ spawn }} from 'node:child_process';
-
-const ROOT = path.dirname(fileURLToPath(import.meta.url));
-const types = {{ '.html': 'text/html', '.js': 'text/javascript', '.woff2': 'font/woff2', '.m4a': 'audio/mp4' }};
-const server = http.createServer((req, res) => {{
-  const p = path.join(ROOT, decodeURIComponent(req.url.split('?')[0]));
-  fs.readFile(p, (e, d) => {{ if (e) {{ res.writeHead(404); res.end(); return; }} res.writeHead(200, {{ 'content-type': types[path.extname(p)] || 'application/octet-stream' }}); res.end(d); }});
-}}).listen(0);
-const port = server.address().port;
-
-const GL = process.env.GL === 'swiftshader' ? ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] : ['--enable-gpu'];
-const browser = await chromium.launch({{
-  executablePath: r'{CHROME_PATH}',
-  args: [...GL, '--ignore-gpu-blocklist']
-}});
-const page = await browser.newPage({{ viewport: {{ width: 720, height: 1280 }} }});
-page.on('console', m => {{ if (m.type() === 'error' || m.type() === 'warning') console.log('[page]', m.text()); }});
-page.on('pageerror', e => console.log('[pageerror]', e.message));
-await page.goto(`http://localhost:${{port}}/index.html?render=1`);
-await page.waitForFunction(() => window.renderAt && window.ready);
-await page.evaluate(() => window.ready);
-const shot = () => page.screenshot({{ clip: {{ x: 0, y: 0, width: 720, height: 1280 }}, type: 'png' }});
-
-const [mode, a, b, c, d, e] = process.argv.slice(2);
-if (mode === 'stills') {{
-  fs.mkdirSync(b, {{ recursive: true }});
-  for (const t of a.split(',').map(Number)) {{
-    await page.evaluate(t => window.renderAt(t), t);
-    fs.writeFileSync(path.join(b, `t_${{t.toFixed(2)}}.png`), await shot());
-  }}
-}} else {{
-  const fps = Number(b || 30), dur = await page.evaluate(() => window.DURATION);
-  const from = Number(c || 0), to = Math.min(Number(d || dur), dur);
-  const n0 = Math.round(from * fps), n1 = Math.floor(to * fps);
-  const ff = spawn('ffmpeg', ['-y', '-v', 'error', '-f', 'image2pipe', '-framerate', String(fps), '-c:v', 'png', '-i', '-', '-c:v', 'libx264', '-preset', 'medium', '-crf', '17', '-pix_fmt', 'yuv420p', a], {{ stdio: ['pipe', 'inherit', 'inherit'] }});
-  const T0 = Date.now();
-  for (let n = n0; n < n1; n++) {{
-    await page.evaluate(t => window.renderAt(t), n / fps);
-    const buf = await shot();
-    if (!ff.stdin.write(buf)) await new Promise(r => ff.stdin.once('drain', r));
-    if (n % 30 === 0) console.log(`frame ${{n}}/${{n1}}`);
-  }}
-  ff.stdin.end();
-  await new Promise(r => ff.on('close', r));
-}}
-await browser.close();
-server.close();
-"""
-            render_mjs.write_text(updated, encoding="utf-8")
+            src_modules = find_node_modules()
+            if src_modules and src_modules.exists():
+                try:
+                    if sys.platform == "win32":
+                        subprocess.run(["cmd", "/c", "mklink", "/J", str(dst_modules), str(src_modules)], check=True, capture_output=True)
+                    else:
+                        os.symlink(src_modules, dst_modules)
+                except Exception as e:
+                    # Fallback to copy if symlink fails
+                    shutil.copytree(src_modules, dst_modules)
+            else:
+                # Install directly if no existing node_modules found
+                subprocess.run(["npm", "install", "--no-audit", "--no-fund"], cwd=str(project_dir), check=True)
 
     def render_and_mux(self, project_dir: Path, output_mp4: Path) -> Tuple[Path, Path]:
         """
