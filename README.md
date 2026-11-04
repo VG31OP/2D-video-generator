@@ -38,8 +38,8 @@ Anyone — or AI coding assistants like **Claude Code**, **Antigravity**, **Curs
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/VG31OP/2D-video-generator.git
-cd 2D-video-generator
+git clone https://github.com/VG31OP/zack-d-3d-explainer-generator.git
+cd zack-d-3d-explainer-generator
 
 # 2. Run 1-Click Environment Setup
 # Windows:
