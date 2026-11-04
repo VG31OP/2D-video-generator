@@ -92,6 +92,9 @@ scratch/
 # Base Static Audio Assets (preserve core SFX)
 !storage/assets/sfx/*.wav
 
+# Documentation Showcase Assets
+!docs/showcase/*
+
 # OS, Logs & Temp Cache
 .DS_Store
 Thumbs.db
