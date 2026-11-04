@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-ToonForge / VRJ.AI — One-Click Environment Setup Script
+Zack D. Films 3D Explainer & Instagram Auto-Publisher — One-Click Environment Setup Script
 Automates dependency installation, browser binaries, storage initialization, and verification.
 """
 
@@ -154,7 +154,7 @@ def verify_models():
 
 def main():
     print("=" * 70)
-    print("      🚀 TOONFORGE / VRJ.AI — AUTOMATED ENVIRONMENT SETUP      ")
+    print("      🚀 ZACK D. FILMS 3D EXPLAINER & INSTAGRAM AUTO-PUBLISHER SETUP      ")
     print("=" * 70)
 
     check_python_version()

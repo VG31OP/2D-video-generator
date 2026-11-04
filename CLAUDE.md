@@ -15,8 +15,11 @@ python setup.py
 # 2. Generate 3D Zack D. Explainer Reel locally (No publish)
 python main.py "How Solar Panels Actually Work" --no-publish
 
-# 3. Generate and publish directly to Instagram Reels (@vrj.ai) with auto-boost
+# 3. Generate and publish directly to your connected Instagram account with auto-boost
 python main.py "Why We Dream When Sleeping" --publish
+
+# 4. Connect or switch your Instagram account anytime
+python main.py --login
 
 # 4. Save video and metadata to storage/drafts/
 python main.py "How Touchscreens Detect Your Fingers" --draft

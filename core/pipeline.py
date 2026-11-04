@@ -150,6 +150,18 @@ class Pipeline:
                     print("[-] Skipping Instagram upload due to missing authentication.")
                     return result
 
+            # Get logged-in user handle for personalized caption CTA
+            account_handle = ""
+            try:
+                prof = self.instagram.get_profile()
+                account_handle = prof.get("username", "")
+            except Exception:
+                cl = self.instagram.get_client()
+                if cl and hasattr(cl, "username"):
+                    account_handle = cl.username
+
+            follow_cta = f"Follow @{account_handle}" if account_handle else "Follow"
+
             # Craft viral Instagram caption & hashtags
             caption = (
                 f"Wait... is this REALLY how {topic.rstrip('?.!')} works? 🤯\n\n"
@@ -159,9 +171,9 @@ class Pipeline:
                 f"• {script[4]}\n"
                 f"• {script[6]}\n\n"
                 f"Did you know this before? Drop your thoughts below! 👇\n\n"
-                f"Follow @vrj.ai for daily 3D explainers, hidden technology & viral digital science! 🚀\n"
+                f"{follow_cta} for daily 3D explainers, hidden technology & viral science! 🚀\n"
                 f".\n.\n"
-                f"#tech #science #3danimation #zackdfilms #howitworks #technology #animation #viral #reels #explainer #vrjai #interestingfacts"
+                f"#tech #science #3danimation #zackdfilms #howitworks #technology #animation #viral #reels #explainer #interestingfacts"
             )
             comment = f"Drop a ❤️ and save this! Did you think it worked like this before? Tell us below! 👇"
 

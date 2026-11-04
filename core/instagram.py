@@ -122,6 +122,17 @@ class InstagramPublisher:
                 verification_code=two_factor if two_factor else None
             )
 
+    def logout(self) -> bool:
+        """Clears local session and cookies to allow switching or resetting accounts."""
+        if SESSION_FILE.exists():
+            SESSION_FILE.unlink(missing_ok=True)
+        if COOKIES_FILE.exists():
+            COOKIES_FILE.unlink(missing_ok=True)
+        self._client = None
+        self._cached_profile = None
+        print("[+] Logged out. Stored Instagram session cleared.")
+        return True
+
     def get_profile(self) -> Dict[str, Any]:
         """Fetches profile info for the currently authenticated account."""
         cl = self.get_client()

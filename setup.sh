@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # =======================================================
-# ToonForge / VRJ.AI — Automated Linux / macOS Setup
+# Zack D. Films 3D Explainer — Automated Linux / macOS Setup
 # =======================================================
 
 set -e
 
 echo ""
 echo "======================================================="
-echo "   TOONFORGE / VRJ.AI - ONE-CLICK LINUX/MACOS SETUP"
+echo "   ZACK D. FILMS 3D EXPLAINER - ONE-CLICK UNIX SETUP"
 echo "======================================================="
 echo ""
 

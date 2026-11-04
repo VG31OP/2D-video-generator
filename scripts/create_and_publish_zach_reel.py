@@ -33,7 +33,7 @@ def main():
     print("=" * 70)
     print("       🚀 AUTONOMOUS 3D ZACK D. FILMS PIPELINE INITIATED       ")
     print(f"  Topic   : {args.topic}")
-    print(f"  Publish : {'YES (@vrj.ai)' if publish else 'NO (Local Only)'}")
+    print(f"  Publish : {'YES (Instagram Reels)' if publish else 'NO (Local Only)'}")
     print("=" * 70)
 
     res = pipeline.run(topic=args.topic, publish=publish)

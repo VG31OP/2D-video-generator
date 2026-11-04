@@ -1,11 +1,11 @@
 @echo off
 REM =======================================================
-REM ToonForge / VRJ.AI — Automated Windows Setup
+REM Zack D. Films 3D Explainer & Instagram Auto-Publisher Setup
 REM =======================================================
 
 echo.
 echo =======================================================
-echo    TOONFORGE / VRJ.AI - ONE-CLICK WINDOWS SETUP
+echo    ZACK D. FILMS 3D EXPLAINER - ONE-CLICK WINDOWS SETUP
 echo =======================================================
 echo.
 

@@ -85,6 +85,16 @@ def main():
         help="Instagram sessionid cookie value"
     )
     parser.add_argument(
+        "--login",
+        action="store_true",
+        help="Connect or switch to your personal/brand Instagram account"
+    )
+    parser.add_argument(
+        "--logout",
+        action="store_true",
+        help="Log out and clear stored Instagram session"
+    )
+    parser.add_argument(
         "--status",
         action="store_true",
         help="Check Instagram authentication status and profile information"
@@ -92,7 +102,24 @@ def main():
 
     args = parser.parse_args()
 
-    # 1. Status Check
+    # 1. Login / Logout / Status Operations
+    if args.logout:
+        print_banner()
+        instagram_publisher.logout()
+        return 0
+
+    if args.login:
+        print_banner()
+        if args.session_id or (args.username and args.password):
+            instagram_publisher.login_with_credentials(
+                username=args.username or "",
+                password=args.password or "",
+                session_id=args.session_id
+            )
+        else:
+            instagram_publisher.login_interactive()
+        return 0
+
     if args.status:
         print_banner()
         if instagram_publisher.is_authenticated():
@@ -106,7 +133,7 @@ def main():
                 print(f" Instagram Status:  SESSION DETECTED (Validation warning: {e})")
         else:
             print(" Instagram Status:  NOT AUTHENTICATED")
-            print(" Run with '--publish' to interactively enter credentials.")
+            print(" Run 'python main.py --login' to connect your Instagram account.")
         return 0
 
     # 2. Topic Input
@@ -143,9 +170,18 @@ def main():
             "session_id": args.session_id or "",
         }
 
+    active_account = ""
+    if instagram_publisher.is_authenticated():
+        try:
+            active_account = f" (@{instagram_publisher.get_profile()['username']})"
+        except Exception:
+            active_account = " (Saved Session)"
+    elif publish:
+        active_account = " (Will prompt for your login)"
+
     print_banner()
     print(f"🎯 Target Topic : {topic}")
-    print(f"🚀 Publish Reel : {'YES (@vrj.ai)' if publish else 'NO (Local Only)'}")
+    print(f"🚀 Publish Reel : {'YES' + active_account if publish else 'NO (Local Render Only)'}")
     print(f"💾 Save Draft   : {'YES' if args.draft else 'NO'}")
     print("-" * 70)
 
