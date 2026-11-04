@@ -73,3 +73,8 @@ This document provides operational context, architectural contracts, and safety 
   - Whenever the user provides a topic or title without specifying an alternate style, automatically generate the Zack D. Films 3D reel, render it, and publish it directly to Instagram (`@vrj.ai`) with automated engagement boost (like, pinned CTA comment, story share).
   - **Zero Media & Cache in Git**: Ensure `.gitignore` ignores all generated images, MP4s, WAVs, and `storage/reels/`. Clean intermediate `silent.mp4` render passes and temporary test stills immediately.
 
+### 7. Clean Repository & No Per-Video Scripts in Git
+- **NEVER create or commit one-off per-video generator scripts into `scripts/`** (e.g., `run_<topic>_pipeline.py`, `build_<topic>_reel.py`, etc.).
+- All generation must either use the generic CLI (`python scripts/create_and_publish_zach_reel.py "<Topic>"`) or keep topic-specific files strictly confined to `storage/reels/<topic>/` (which is git-ignored).
+- `scripts/` is strictly reserved for reusable, general-purpose system tools, management CLIs, and test suites.
+
