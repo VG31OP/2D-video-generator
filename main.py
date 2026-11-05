@@ -61,6 +61,11 @@ def main():
         help="Save render and metadata into storage/drafts/ for review"
     )
     parser.add_argument(
+        "--no-story",
+        action="store_true",
+        help="Do not share the published reel to Instagram Story during engagement boost"
+    )
+    parser.add_argument(
         "--script-file",
         type=str,
         default=None,
@@ -191,7 +196,8 @@ def main():
             publish=publish,
             draft=args.draft,
             custom_script=custom_script,
-            credentials=credentials
+            credentials=credentials,
+            share_story=not args.no_story
         )
 
         print("\n" + "=" * 70)

@@ -31,7 +31,8 @@ class Pipeline:
         publish: bool = False,
         draft: bool = False,
         custom_script: Optional[List[str]] = None,
-        credentials: Optional[Dict[str, str]] = None
+        credentials: Optional[Dict[str, str]] = None,
+        share_story: bool = True
     ) -> Dict[str, Any]:
         """
         Executes the end-to-end autonomous video creation and publishing workflow.
@@ -190,12 +191,13 @@ class Pipeline:
             result["reel_url"] = reel_url
 
             if media_id:
-                print("\n[+] Boosting Reel with automated engagement (like, pinned CTA, story reshare)...")
+                boost_msg = "like, pinned CTA" + (", story reshare" if share_story else "")
+                print(f"\n[+] Boosting Reel with automated engagement ({boost_msg})...")
                 boost_res = self.instagram.boost_engagement(
                     media_id=media_id,
                     comment_text=comment,
                     like=True,
-                    share_story=True,
+                    share_story=share_story,
                     video_path=str(out_video)
                 )
                 result["boost"] = boost_res
