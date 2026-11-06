@@ -31,6 +31,28 @@ export function materials() {
     rivet: new THREE.MeshStandardMaterial({ color: 0x8b5a2b, metalness: 0.8, roughness: 0.35 }),
     feather: new THREE.MeshStandardMaterial({ color: 0xe8e2d0, roughness: 0.8, side: THREE.DoubleSide }),
     string: new THREE.MeshStandardMaterial({ color: 0xe0d8c0, roughness: 0.6 }),
+    // ---------- Modern Tech & Physics Materials ----------
+    phoneBody: new THREE.MeshPhysicalMaterial({ color: 0x1e2229, metalness: 0.85, roughness: 0.32, clearcoat: 0.2 }),
+    phoneScreen: new THREE.MeshPhysicalMaterial({ color: 0x08090a, metalness: 0.2, roughness: 0.08, clearcoat: 1.0 }),
+    phoneScreenOn: new THREE.MeshPhysicalMaterial({ color: 0x0f172a, emissive: 0x1e3a8a, emissiveIntensity: 0.8, roughness: 0.1, clearcoat: 1.0 }),
+    pcbGreen: new THREE.MeshStandardMaterial({ color: 0x064e3b, roughness: 0.55 }),
+    goldTrace: new THREE.MeshPhysicalMaterial({ color: 0xf59e0b, metalness: 0.95, roughness: 0.18 }),
+    siliconChip: new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.25, metalness: 0.3 }),
+    water: new THREE.MeshPhysicalMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.72, roughness: 0.05, transmission: 0.6, ior: 1.33 }),
+    riceGrain: new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.75 }),
+    ceramic: new THREE.MeshPhysicalMaterial({ color: 0xf1f5f9, roughness: 0.18, clearcoat: 0.85 }),
+    sludge: new THREE.MeshStandardMaterial({ color: 0x65a30d, emissive: 0x365314, emissiveIntensity: 0.6, roughness: 0.4 }),
+    batteryFoil: new THREE.MeshPhysicalMaterial({ color: 0xcbd5e1, metalness: 0.92, roughness: 0.28, clearcoat: 0.4 }),
+    batteryCathode: new THREE.MeshPhysicalMaterial({ color: 0x1d4ed8, metalness: 0.75, roughness: 0.35 }),
+    batteryAnode: new THREE.MeshPhysicalMaterial({ color: 0xb45309, metalness: 0.85, roughness: 0.3 }),
+    separator: new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.85, transparent: true, opacity: 0.88 }),
+    flame: new THREE.MeshBasicMaterial({ color: 0xff5500, transparent: true, opacity: 0.95 }),
+    electricArc: new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.9 }),
+    smoke: new THREE.MeshStandardMaterial({ color: 0x334155, transparent: true, opacity: 0.45, roughness: 0.9 }),
+    // ---------- Biology & Anatomy Materials ----------
+    gumPink: new THREE.MeshPhysicalMaterial({ color: 0xf472b6, roughness: 0.35, clearcoat: 0.6 }),
+    organInternal: new THREE.MeshPhysicalMaterial({ color: 0x991b1b, roughness: 0.42, clearcoat: 0.3 }),
+    acidGreen: new THREE.MeshPhysicalMaterial({ color: 0x84cc16, roughness: 0.1, transparent: true, opacity: 0.8, transmission: 0.7, emissive: 0x365314, emissiveIntensity: 0.5, ior: 1.34 }),
   };
   const cm = chainmailTextures([14, 9]);
   M.chainmail = new THREE.MeshPhysicalMaterial({

@@ -291,3 +291,386 @@ export function rippleOverlay(target) {
   target.add(m);
   return m;
 }
+
+// ============================================================================
+// TECH, PHONE, RICE, BATTERY & CIRCUIT 3D PROCEDURAL PROPS
+// ============================================================================
+
+// 1. Modern Smartphone with detailed screen, chassis & USB-C port
+export function modernPhone({ wet = false, screenOn = true } = {}) {
+  const M = materials();
+  const g = new THREE.Group();
+  const frame = box(0.082, 0.168, 0.0085, M.phoneBody);
+  const screen = box(0.076, 0.160, 0.001, screenOn ? M.phoneScreenOn : M.phoneScreen, [0, 0, 0.0048]);
+  g.add(frame, screen);
+
+  // USB-C bottom port
+  const port = box(0.016, 0.004, 0.006, M.steelDark, [0, -0.084, 0]);
+  g.add(port);
+
+  // Floating water droplets on surface if wet
+  if (wet) {
+    const drops = new THREE.Group();
+    for (let i = 0; i < 18; i++) {
+      const drop = new THREE.Mesh(new THREE.SphereGeometry(0.002 + (i % 3) * 0.0015, 8, 8), M.water);
+      drop.scale.set(1.2, 1.2, 0.5);
+      drop.position.set((Math.sin(i * 1.7) * 0.03), (Math.cos(i * 2.3) * 0.06), 0.0055);
+      drops.add(drop);
+    }
+    g.add(drops);
+    g.drops = drops;
+  }
+  return shadow(g);
+}
+
+// 2. Ceramic Bowl Filled with Detailed 3D Rice Grains
+export function riceBowl({ withPhone = true } = {}) {
+  const M = materials();
+  const g = new THREE.Group();
+
+  // Ceramic white bowl
+  const bowlGeo = new THREE.CylinderGeometry(0.18, 0.10, 0.14, 32, 1, true);
+  const bowlOuter = new THREE.Mesh(bowlGeo, M.ceramic);
+  const bowlBase = new THREE.Mesh(new THREE.CylinderGeometry(0.10, 0.10, 0.015, 32), M.ceramic);
+  bowlBase.position.y = -0.07;
+  g.add(bowlOuter, bowlBase);
+
+  // 3D Rice Grains cluster
+  const riceCluster = new THREE.Group();
+  const grainGeo = new THREE.CapsuleGeometry(0.003, 0.012, 4, 8);
+  for (let i = 0; i < 220; i++) {
+    const grain = new THREE.Mesh(grainGeo, M.riceGrain);
+    const radius = Math.sqrt(Math.random()) * 0.16;
+    const theta = Math.random() * Math.PI * 2;
+    grain.position.set(Math.cos(theta) * radius, -0.01 + Math.random() * 0.04, Math.sin(theta) * radius);
+    grain.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+    riceCluster.add(grain);
+  }
+  g.add(riceCluster);
+
+  // Submerged phone sticking out diagonally
+  if (withPhone) {
+    const phone = modernPhone({ wet: true });
+    phone.position.set(0.02, 0.03, -0.01);
+    phone.rotation.set(0.4, -0.2, 0.3);
+    g.add(phone);
+    g.phone = phone;
+  }
+  return shadow(g);
+}
+
+// 3. Exploded Macro Cutaway of USB-C Port with Trapped Water
+export function microscopicPortCutaway() {
+  const M = materials();
+  const g = new THREE.Group();
+
+  // Giant exploded outer port tunnel
+  const portShell = box(0.35, 0.16, 0.45, M.phoneBody);
+  g.add(portShell);
+
+  // Inner cavity
+  const cavity = box(0.31, 0.12, 0.40, M.steelDark, [0, 0, 0.02]);
+  g.add(cavity);
+
+  // Gold connector pins inside
+  const pins = new THREE.Group();
+  for (let i = 0; i < 12; i++) {
+    const pin = box(0.012, 0.008, 0.28, M.goldTrace, [-0.12 + i * 0.022, 0.025, 0]);
+    pins.add(pin);
+    const pinBot = box(0.012, 0.008, 0.28, M.goldTrace, [-0.12 + i * 0.022, -0.025, 0]);
+    pins.add(pinBot);
+  }
+  g.add(pins);
+
+  // Trapped surface-tension water droplets
+  const droplets = new THREE.Group();
+  for (let i = 0; i < 8; i++) {
+    const drop = new THREE.Mesh(new THREE.SphereGeometry(0.035 + (i % 3) * 0.015, 16, 16), M.water);
+    drop.scale.set(1.4, 0.9, 1.2);
+    drop.position.set(-0.09 + i * 0.026, (i % 2 === 0 ? 0.02 : -0.02), -0.05 + Math.sin(i) * 0.08);
+    droplets.add(drop);
+  }
+  g.add(droplets);
+  g.droplets = droplets;
+
+  return shadow(g);
+}
+
+// 4. Starch Dust Cloud particles streaming inward
+export function starchDustStream(count = 70) {
+  const M = materials();
+  const g = new THREE.Group();
+  const dustGeo = new THREE.SphereGeometry(0.008, 6, 6);
+  const particles = [];
+  for (let i = 0; i < count; i++) {
+    const p = new THREE.Mesh(dustGeo, M.riceGrain);
+    p.position.set((Math.random() - 0.5) * 0.5, 0.2 + Math.random() * 0.4, (Math.random() - 0.5) * 0.4);
+    g.add(p);
+    particles.push({ mesh: p, speed: 0.2 + Math.random() * 0.3, offset: Math.random() * Math.PI * 2 });
+  }
+  g.update = (lt) => {
+    particles.forEach((item, idx) => {
+      item.mesh.position.y -= item.speed * 0.016;
+      item.mesh.position.x += Math.sin(lt * 3 + item.offset) * 0.002;
+      if (item.mesh.position.y < -0.1) item.mesh.position.y = 0.4;
+    });
+  };
+  return g;
+}
+
+// 5. Bubbling Green Toxic Corrosion Sludge over circuits
+export function corrosionSludge() {
+  const M = materials();
+  const g = new THREE.Group();
+  const base = box(0.26, 0.02, 0.22, M.sludge);
+  g.add(base);
+
+  // Bubbles
+  const bubbles = [];
+  for (let i = 0; i < 14; i++) {
+    const b = new THREE.Mesh(new THREE.SphereGeometry(0.015 + (i % 4) * 0.008, 12, 12), M.sludge);
+    b.position.set((Math.sin(i * 1.8) * 0.1), 0.02, (Math.cos(i * 2.1) * 0.08));
+    g.add(b);
+    bubbles.push({ mesh: b, baseScale: 1.0, speed: 2 + (i % 3) });
+  }
+  g.update = (lt) => {
+    bubbles.forEach(b => {
+      const s = Math.max(0.2, Math.sin(lt * b.speed) * 1.4);
+      b.mesh.scale.set(s, s * 0.8, s);
+    });
+  };
+  return shadow(g);
+}
+
+// 6. High-Detail Motherboard Circuit Board with Fried Components
+export function motherboardPCB({ fried = false } = {}) {
+  const M = materials();
+  const g = new THREE.Group();
+
+  // Green substrate
+  const pcb = box(0.38, 0.015, 0.42, fried ? M.steelDark : M.pcbGreen);
+  g.add(pcb);
+
+  // Gold circuit traces
+  for (let i = 0; i < 16; i++) {
+    const trace = box(0.004, 0.018, 0.12 + (i % 5) * 0.04, M.goldTrace, [-0.14 + (i * 0.02), 0.002, (i % 2 === 0 ? 0.05 : -0.05)]);
+    g.add(trace);
+  }
+
+  // Microchips
+  const mainCPU = box(0.09, 0.025, 0.09, M.siliconChip, [0, 0.01, 0]);
+  const ram1 = box(0.045, 0.02, 0.07, M.siliconChip, [0.08, 0.008, 0.04]);
+  const ram2 = box(0.045, 0.02, 0.07, M.siliconChip, [-0.08, 0.008, 0.04]);
+  g.add(mainCPU, ram1, ram2);
+
+  // Capacitors
+  for (let i = 0; i < 8; i++) {
+    const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.022, 12), M.steelBright);
+    cap.position.set(-0.12 + (i * 0.035), 0.015, 0.12);
+    g.add(cap);
+  }
+
+  // Burnt scorched black overlay if fried
+  if (fried) {
+    const scorch = new THREE.Mesh(new THREE.CircleGeometry(0.12, 24), M.steelDark);
+    scorch.rotation.x = -Math.PI / 2;
+    scorch.position.set(0, 0.026, 0);
+    g.add(scorch);
+  }
+  return shadow(g);
+}
+
+// 7. Lithium-Ion Smartphone Battery Pouch
+export function lithiumBatteryPouch({ swollen = false } = {}) {
+  const M = materials();
+  const g = new THREE.Group();
+
+  // Silver foil pouch
+  const pouchGeo = new THREE.BoxGeometry(0.09, 0.14, swollen ? 0.045 : 0.012, 8, 8, 8);
+  const pouch = new THREE.Mesh(pouchGeo, M.batteryFoil);
+  g.add(pouch);
+
+  // Black terminal ribbon at top
+  const ribbon = box(0.05, 0.012, 0.006, M.siliconChip, [0, 0.074, 0]);
+  const termPos = box(0.008, 0.015, 0.003, M.goldTrace, [-0.018, 0.082, 0]);
+  const termNeg = box(0.008, 0.015, 0.003, M.steelBright, [0.018, 0.082, 0]);
+  g.add(ribbon, termPos, termNeg);
+
+  // Warning label
+  const label = box(0.065, 0.08, 0.001, M.steelDark, [0, -0.01, swollen ? 0.023 : 0.0065]);
+  g.add(label);
+
+  return shadow(g);
+}
+
+// 8. Sharp Steel Puncture Nail
+export function sharpSteelNail() {
+  const M = materials();
+  const g = new THREE.Group();
+
+  // Shaft
+  const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.005, 0.005, 0.16, 16), M.steelBright);
+  shaft.position.y = 0.08;
+  g.add(shaft);
+
+  // Flat head
+  const head = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, 0.006, 16), M.steelBright);
+  head.position.y = 0.16;
+  g.add(head);
+
+  // Sharp tip
+  const tip = new THREE.Mesh(new THREE.ConeGeometry(0.005, 0.024, 16), M.steelBright);
+  tip.rotation.x = Math.PI;
+  tip.position.y = -0.012;
+  g.add(tip);
+
+  return shadow(g);
+}
+
+// 9. Exploded Layer Cutaway of Battery (Cathode, Separator, Anode)
+export function batteryLayeredCutaway() {
+  const M = materials();
+  const g = new THREE.Group();
+
+  // Cathode (Blue foil)
+  const cathode = box(0.18, 0.008, 0.22, M.batteryCathode, [0, 0.06, 0]);
+  // Separator (Porous White membrane)
+  const sep = box(0.19, 0.004, 0.23, M.separator, [0, 0.0, 0]);
+  // Anode (Copper foil)
+  const anode = box(0.18, 0.008, 0.22, M.batteryAnode, [0, -0.06, 0]);
+
+  g.add(cathode, sep, anode);
+  g.sep = sep;
+  g.cathode = cathode;
+  g.anode = anode;
+
+  return shadow(g);
+}
+
+// 10. Volumetric Jet Blowtorch Flame
+export function fireBlowtorchJet() {
+  const M = materials();
+  const g = new THREE.Group();
+
+  // Multiple nested glowing flame cones
+  const core = new THREE.Mesh(new THREE.ConeGeometry(0.04, 0.35, 16), M.electricArc);
+  core.position.y = 0.17;
+  const flameOuter = new THREE.Mesh(new THREE.ConeGeometry(0.09, 0.45, 16), M.flame);
+  flameOuter.position.y = 0.22;
+
+  g.add(flameOuter, core);
+  g.update = (lt) => {
+    const s = 1.0 + Math.sin(lt * 25) * 0.15;
+    g.scale.set(s, s * 1.1, s);
+  };
+  return g;
+}
+
+// 11. 3D Floating Misconception Badge
+export function misconceptionBadge(text = "MISCONCEPTION") {
+  const M = materials();
+  const g = new THREE.Group();
+
+  // Pill badge
+  const badge = new THREE.Mesh(new THREE.CapsuleGeometry(0.04, 0.24, 8, 16), M.steelDark);
+  badge.rotation.z = Math.PI / 2;
+  g.add(badge);
+
+  // Red border ring
+  const border = new THREE.Mesh(new THREE.TorusGeometry(0.07, 0.006, 8, 24), M.flame);
+  border.position.set(-0.10, 0, 0.02);
+  g.add(border);
+
+  // Large question mark icon / exclamation
+  const bar = box(0.008, 0.05, 0.008, M.goldTrace, [-0.10, 0.01, 0.02]);
+  const dot = box(0.008, 0.008, 0.008, M.goldTrace, [-0.10, -0.025, 0.02]);
+  g.add(bar, dot);
+
+  return shadow(g);
+}
+
+// 12. Deformed 3D Chewing Gum Wad
+export function chewingGumWad(scale = 1.0) {
+  const M = materials();
+  const geo = new THREE.DodecahedronGeometry(0.045 * scale, 2);
+  const pos = geo.attributes.position;
+  for (let i = 0; i < pos.count; i++) {
+    const v = new THREE.Vector3().fromBufferAttribute(pos, i);
+    const n = Math.sin(v.x * 40) * Math.cos(v.y * 30) * 0.005;
+    v.addScaledVector(v.clone().normalize(), n);
+    pos.setXYZ(i, v.x, v.y, v.z);
+  }
+  geo.computeVertexNormals();
+  const mesh = new THREE.Mesh(geo, M.gumPink);
+  mesh.castShadow = true;
+  return mesh;
+}
+
+// 13. Anatomical Stomach Chamber with Gastric Acid Pool
+export function stomachChamber() {
+  const M = materials();
+  const g = new THREE.Group();
+
+  const stomachOuter = new THREE.Mesh(
+    new THREE.TorusGeometry(0.18, 0.08, 16, 32, Math.PI * 1.3),
+    M.organInternal
+  );
+  stomachOuter.rotation.z = -0.4;
+  g.add(stomachOuter);
+
+  const acid = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.11, 0.11, 0.04, 24),
+    M.acidGreen
+  );
+  acid.position.set(0.05, -0.06, 0);
+  g.add(acid);
+
+  const bubbleGroup = new THREE.Group();
+  for (let i = 0; i < 8; i++) {
+    const b = new THREE.Mesh(new THREE.SphereGeometry(0.008 + (i % 3) * 0.004, 12, 12), M.acidGreen);
+    b.position.set((Math.random() - 0.5) * 0.14 + 0.05, -0.04 + Math.random() * 0.05, (Math.random() - 0.5) * 0.1);
+    b.baseY = b.position.y;
+    b.spd = 0.5 + Math.random() * 0.8;
+    bubbleGroup.add(b);
+  }
+  g.add(bubbleGroup);
+
+  g.update = (lt) => {
+    bubbleGroup.children.forEach(b => {
+      b.position.y = b.baseY + ((lt * b.spd) % 0.06);
+    });
+    acid.scale.y = 1.0 + Math.sin(lt * 4) * 0.08;
+  };
+
+  return shadow(g);
+}
+
+// 14. Pulsing Intestinal Peristalsis Tube
+export function peristalsisTube() {
+  const M = materials();
+  const g = new THREE.Group();
+
+  const rings = [];
+  const count = 14;
+  for (let i = 0; i < count; i++) {
+    const r = new THREE.Mesh(
+      new THREE.TorusGeometry(0.065, 0.018, 12, 24),
+      M.organInternal
+    );
+    const t = (i / (count - 1)) * 2 - 1;
+    r.position.set(Math.sin(t * 1.5) * 0.08, -t * 0.22, 0);
+    r.rotation.x = Math.PI / 2;
+    rings.push(r);
+    g.add(r);
+  }
+
+  g.update = (lt) => {
+    rings.forEach((r, idx) => {
+      const wave = Math.sin(lt * 5 - idx * 0.5);
+      const s = 1.0 + wave * 0.22;
+      r.scale.set(s, s, 1.0);
+    });
+  };
+
+  return shadow(g);
+}

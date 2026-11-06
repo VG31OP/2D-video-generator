@@ -71,7 +71,7 @@ class Pipeline:
         print("=" * 70)
 
         self.scene_builder.setup_project(project_dir)
-        shots_file = self.scene_builder.build_shots_file(project_dir, captions, total_duration, meta_lines)
+        shots_file = self.scene_builder.build_shots_file(project_dir, captions, total_duration, meta_lines, topic=topic)
         print(f"[+] Scene environment ready with zoomed-out 9:16 camera framing")
 
         print("\n" + "=" * 70)

@@ -95,8 +95,32 @@ class ScriptEngine:
                 "Allowing space systems to connect with Earth seamlessly across infinite distances."
             ]
 
+        # Domain 2b: Aviation, Aircraft & Autoland
+        elif any(w in t_lower for w in ["plane", "airplane", "autopilot", "flight", "pilot", "runway", "landing", "jet"]):
+            return [
+                "When an airliner touches down on a runway in zero-visibility fog,",
+                "some people assume the pilots are peering through the windshield hoping for a visual.",
+                "But in reality, the pilots do not even touch the flight controls during an autoland.",
+                "First, the airport's Instrument Landing System beams dual radio signals through the fog.",
+                "The localizer transmitter locks horizontal alignment, while the glideslope guides vertical descent.",
+                "Triple-redundant onboard flight computers cross-check radio altimeters twenty times per second.",
+                "At fifty feet above the asphalt, the autothrottle cuts engine thrust and gently flares the nose.",
+                "Allowing the heavy landing gear to smoothly kiss the tarmac with zero human hands on the yoke."
+            ]
+
         # Domain 3: Human Biology, Body & Medical
-        elif any(w in t_lower for w in ["body", "brain", "heart", "sleep", "dream", "caffeine", "coffee", "muscle", "eye", "ear", "blood"]):
+        elif any(w in t_lower for w in ["body", "brain", "heart", "sleep", "dream", "caffeine", "coffee", "muscle", "eye", "ear", "blood", "gum", "swallow"]):
+            if "gum" in t_lower:
+                return [
+                    "When you accidentally swallow a piece of sticky chewing gum,",
+                    "some people believe the myth that it stays trapped inside your stomach for seven whole years.",
+                    "But in reality, your digestive system handles it much faster than you think.",
+                    "First, your stomach acid and powerful enzymes attempt to break down the gum sugars.",
+                    "However, the synthetic gum base is made of indigestible polymers that resist gastric acid.",
+                    "Unable to dissolve it, your gastrointestinal tract activates involuntary muscular contractions called peristalsis.",
+                    "These rhythmic waves push the wad of gum along with other digested food straight through your intestines.",
+                    "Until your body safely excretes it out within a couple of days, completely unharmed."
+                ]
             return [
                 f"When you experience {topic.rstrip('?.!')} inside your body,",
                 "some people think the sensation is caused by a simple external trigger.",
