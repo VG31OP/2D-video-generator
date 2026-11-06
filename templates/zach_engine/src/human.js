@@ -153,12 +153,82 @@ function buildHead(M, { helmet = false, hood = false } = {}) {
   return { head, jaw, setMouth };
 }
 
-function fist(M, mat, side) {
+function buildHand(M, mat, side) {
   const g = new THREE.Group();
-  g.add(sph(0.045, mat, [0, -0.055, 0.005], [0.85, 1.05, 0.62]));
-  for (let i = 0; i < 4; i++) g.add(sph(0.014, mat, [-0.027 + i * 0.018, -0.1, 0.022], [1, 1, 1.2]));
-  const th = new THREE.Mesh(new THREE.CapsuleGeometry(0.012, 0.03, 4, 8), mat);
-  th.position.set(side * -0.03, -0.06, 0.03); th.rotation.set(0.6, 0, side * 0.5); g.add(th);
+
+  // 1. Wrist connection (tapered cylinder closing forearm gap)
+  const wrist = new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.038, 0.045, 16), mat);
+  wrist.position.set(0, -0.015, 0);
+  g.add(wrist);
+
+  // 2. Anatomical Palm (rounded, properly proportioned)
+  const palm = new THREE.Mesh(new THREE.BoxGeometry(0.064, 0.064, 0.026), mat);
+  palm.position.set(0, -0.054, 0.004);
+  palm.castShadow = palm.receiveShadow = true;
+  g.add(palm);
+
+  const knucklePad = new THREE.Mesh(new THREE.SphereGeometry(0.020, 16, 12), mat);
+  knucklePad.scale.set(1.4, 0.5, 0.7);
+  knucklePad.position.set(0, -0.082, 0.006);
+  g.add(knucklePad);
+
+  // 3. Four Articulated Fingers (Index, Middle, Ring, Pinky)
+  // For left hand (side=1): thumb is medial (-x), pinky is lateral (+x)
+  // For right hand (side=-1): thumb is medial (+x), pinky is lateral (-x)
+  const fingerData = [
+    { relX: -1.2, len: 0.038, rad: 0.0090, curl: 0.45 }, // index
+    { relX: -0.4, len: 0.042, rad: 0.0095, curl: 0.52 }, // middle
+    { relX:  0.4, len: 0.039, rad: 0.0090, curl: 0.55 }, // ring
+    { relX:  1.2, len: 0.032, rad: 0.0080, curl: 0.60 }  // pinky
+  ];
+
+  fingerData.forEach(f => {
+    const fx = side * f.relX * 0.018;
+    const fy = -0.082;
+    const fz = 0.006;
+
+    const fingerGroup = new THREE.Group();
+    fingerGroup.position.set(fx, fy, fz);
+
+    // Proximal phalanx (angled forward)
+    const prox = new THREE.Mesh(new THREE.CapsuleGeometry(f.rad, f.len * 0.55, 6, 12), mat);
+    prox.position.y = -f.len * 0.28;
+    prox.rotation.x = f.curl;
+    prox.castShadow = true;
+    fingerGroup.add(prox);
+
+    // Distal phalanx (curling inward)
+    const dist = new THREE.Mesh(new THREE.CapsuleGeometry(f.rad * 0.9, f.len * 0.5, 6, 12), mat);
+    dist.position.set(0, -f.len * 0.46, Math.sin(f.curl) * f.len * 0.35);
+    dist.rotation.x = f.curl * 1.4;
+    dist.castShadow = true;
+    fingerGroup.add(dist);
+
+    g.add(fingerGroup);
+  });
+
+  // 4. Opposable Thumb
+  const thumbBaseX = side * -0.030;
+  const thumbBaseY = -0.040;
+  const thumbBaseZ = 0.012;
+
+  const thumbGroup = new THREE.Group();
+  thumbGroup.position.set(thumbBaseX, thumbBaseY, thumbBaseZ);
+  thumbGroup.rotation.set(0.40, side * 0.35, side * 0.42);
+
+  const thumbProx = new THREE.Mesh(new THREE.CapsuleGeometry(0.010, 0.026, 6, 12), mat);
+  thumbProx.position.y = -0.013;
+  thumbProx.castShadow = true;
+  thumbGroup.add(thumbProx);
+
+  const thumbDist = new THREE.Mesh(new THREE.CapsuleGeometry(0.009, 0.022, 6, 12), mat);
+  thumbDist.position.set(0, -0.030, 0.005);
+  thumbDist.rotation.x = 0.32;
+  thumbDist.castShadow = true;
+  thumbGroup.add(thumbDist);
+
+  g.add(thumbGroup);
+
   shadowAll(g);
   return g;
 }
@@ -203,7 +273,7 @@ export function makeHuman(outfit = 'plate', opts = {}) {
     el.add(sph(0.046 + thick, limbMat));
     el.add(cap(0.043 + thick, 0.21, limbMat));
     const wr = new THREE.Group(); wr.position.y = -0.27; el.add(wr);
-    wr.add(fist(M, handMat, s));
+    wr.add(buildHand(M, handMat, s));
     j[k + 'Sh'] = sh; j[k + 'El'] = el; j[k + 'Wr'] = wr;
     // legs
     const hip = new THREE.Group(); hip.position.set(s * 0.095, -0.06, 0); pelvis.add(hip);
