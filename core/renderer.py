@@ -35,16 +35,24 @@ class Renderer:
             env["FFMPEG_PATH"] = str(self.ffmpeg_path)
 
         cmd = ["node", "render.mjs", "video", str(silent_mp4.name), str(fps)]
-        print(f"[+] Starting WebGL frame capture ({fps} fps)...")
-        res = subprocess.run(cmd, cwd=str(project_dir), env=env, capture_output=True, text=True)
-
-        if res.returncode != 0:
+        res = None
+        for attempt in range(2):
+            if silent_mp4.exists():
+                silent_mp4.unlink(missing_ok=True)
+            print(f"[+] Starting WebGL frame capture ({fps} fps)... (attempt {attempt + 1}/2)")
+            res = subprocess.run(cmd, cwd=str(project_dir), env=env, capture_output=True, text=True)
+            if res.returncode == 0 and silent_mp4.exists() and silent_mp4.stat().st_size > 0:
+                break
             err_msg = res.stderr or res.stdout
-            print(f"[-] WebGL render error:\n{err_msg}")
-            raise RuntimeError(f"WebGL frame rendering failed with exit code {res.returncode}:\n{err_msg}")
+            print(f"[-] WebGL render attempt {attempt + 1} exited with code {res.returncode}:\n{err_msg[:300]}")
+            if attempt == 0 and sys.platform == "win32":
+                import time
+                subprocess.run(["powershell", "-Command", "Get-Process -Name chrome -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue"], capture_output=True)
+                time.sleep(2)
 
         if not silent_mp4.exists() or silent_mp4.stat().st_size == 0:
-            raise FileNotFoundError(f"Rendered silent video not found at {silent_mp4}")
+            err_msg = (res.stderr or res.stdout) if res else "Unknown error"
+            raise RuntimeError(f"WebGL frame rendering failed:\n{err_msg}")
 
         print(f"[+] WebGL render finished: {silent_mp4.name} ({silent_mp4.stat().st_size / (1024*1024):.2f} MB)")
         return silent_mp4

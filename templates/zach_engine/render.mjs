@@ -56,7 +56,7 @@ if (!chromePath && process.platform === 'win32') {
 }
 
 const launchOptions = {
-  args: [...GL, '--ignore-gpu-blocklist']
+  args: [...GL, '--ignore-gpu-blocklist', '--disable-gpu-watchdog', '--no-sandbox']
 };
 if (chromePath && fs.existsSync(chromePath)) {
   launchOptions.executablePath = chromePath;
