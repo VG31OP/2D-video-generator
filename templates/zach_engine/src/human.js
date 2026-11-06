@@ -71,22 +71,46 @@ function sph(r, mat, pos = [0, 0, 0], scl = [1, 1, 1], seg = 32) {
 }
 function shadowAll(o) { o.traverse(c => { if (c.isMesh) { c.castShadow = true; c.receiveShadow = true; } }); }
 
+function addGlasses(head, M, style = 'rect') {
+  const g = new THREE.Group();
+  g.position.set(0, 0.112, 0.112);
+  for (const s of [-1, 1]) {
+    let rim;
+    if (style === 'round') {
+      rim = new THREE.Mesh(new THREE.TorusGeometry(0.019, 0.003, 8, 24), M.glassesFrame);
+    } else {
+      rim = new THREE.Mesh(new THREE.BoxGeometry(0.038, 0.026, 0.004), M.glassesFrame);
+    }
+    rim.position.set(s * 0.036, 0, 0);
+    g.add(rim);
+    const lens = new THREE.Mesh(new THREE.CircleGeometry(style === 'round' ? 0.017 : 0.015, 16), M.glassesLens);
+    lens.position.set(s * 0.036, 0, 0.002);
+    g.add(lens);
+    const arm = new THREE.Mesh(new THREE.BoxGeometry(0.003, 0.003, 0.10), M.glassesFrame);
+    arm.position.set(s * 0.054, 0, -0.05);
+    g.add(arm);
+  }
+  const bridge = new THREE.Mesh(new THREE.BoxGeometry(0.016, 0.004, 0.004), M.glassesFrame);
+  bridge.position.set(0, 0.004, 0);
+  g.add(bridge);
+  head.add(g);
+}
+
 // ---------- head ----------
-function buildHead(M, { helmet = false, hood = false } = {}) {
+function buildHead(M, { character = 'zack', helmet = false, hood = false } = {}) {
   const head = new THREE.Group();
   const jaw = new THREE.Group(); jaw.position.set(0, 0.06, 0.0); head.add(jaw);
   const parts = {};
   if (helmet) {
     const h = sph(0.128, M.steel, [0, 0.1, 0], [0.92, 1.12, 1.02], 48);
     head.add(h);
-    // visor slit + face plate
     const plate = new THREE.Mesh(new THREE.SphereGeometry(0.131, 48, 24, -0.9, 1.8, 0.9, 1.3), M.steelDark);
     plate.scale.set(0.92, 1.12, 1.04); plate.position.y = 0.1; head.add(plate);
     const slit = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.012, 0.03), M.mouth);
     slit.position.set(0, 0.12, 0.128); head.add(slit);
     const crest = new THREE.Mesh(new THREE.BoxGeometry(0.012, 0.05, 0.26), M.steel);
     crest.position.set(0, 0.235, -0.01); head.add(crest);
-    for (let i = 0; i < 7; i++) { // breaths holes
+    for (let i = 0; i < 7; i++) {
       const d = sph(0.005, M.mouth, [-0.04 + i * 0.013, 0.06, 0.135]); head.add(d);
     }
     shadowAll(head);
@@ -101,38 +125,75 @@ function buildHead(M, { helmet = false, hood = false } = {}) {
   head.add(sph(0.019, M.skin, [0, 0.064, 0.111], [1.25, 0.95, 1.1]));
   head.add(sph(0.009, M.skin, [-0.012, 0.064, 0.1], [1, 0.8, 1]));
   head.add(sph(0.009, M.skin, [0.012, 0.064, 0.1], [1, 0.8, 1]));
+
+  // Hair material selection per character
+  let hairMat = M.hair;
+  if (character === 'tech') hairMat = M.hairBlack;
+  else if (character === 'creator') hairMat = M.hairAuburn;
+  else if (character === 'scientist') hairMat = M.hairGrey;
+
   // eyes
   for (const s of [-1, 1]) {
     head.add(sph(0.0158, M.eyeWhite, [s * 0.035, 0.11, 0.079]));
-    head.add(sph(0.0085, M.iris, [s * 0.035, 0.11, 0.0915], [1, 1, 0.5])); head.add(sph(0.0042, M.mouth, [s * 0.035, 0.11, 0.0948], [1, 1, 0.4]));
+    head.add(sph(0.0085, M.iris, [s * 0.035, 0.11, 0.0915], [1, 1, 0.5]));
+    head.add(sph(0.0042, M.mouth, [s * 0.035, 0.11, 0.0948], [1, 1, 0.4]));
     const lid = new THREE.Mesh(new THREE.SphereGeometry(0.0168, 24, 12, 0, Math.PI * 2, 0, 1.25), M.skin);
     lid.position.set(s * 0.035, 0.11, 0.079); lid.rotation.x = 0.25; head.add(lid);
     parts['lid' + s] = lid;
-    const brow = new THREE.Mesh(new THREE.CapsuleGeometry(0.0042, 0.032, 4, 8), M.hair);
+    const brow = new THREE.Mesh(new THREE.CapsuleGeometry(0.0042, 0.032, 4, 8), hairMat);
     brow.scale.z = 0.6; brow.rotation.z = Math.PI / 2 + s * 0.12; brow.position.set(s * 0.036, 0.134, 0.093); head.add(brow);
     parts['brow' + s] = brow;
     head.add(sph(0.024, M.skin, [s * 0.087, 0.098, -0.005], [0.38, 1, 0.7]));
   }
-  // hair (cap) + sideburns
+
+  // Hair styling per character
   const hairG = new THREE.SphereGeometry(0.106, 48, 24, 0, Math.PI * 2, 0, 1.45);
-  const hair = new THREE.Mesh(hairG, M.hair);
-  hair.scale.set(0.9, 1.1, 1.02); hair.position.set(0, 0.103, -0.006); hair.rotation.x = -0.42; head.add(hair);
-  const quiff = sph(0.07, M.hair, [0.01, 0.19, 0.035], [1.1, 0.55, 0.9]); quiff.rotation.z = -0.2; head.add(quiff);
-  for (const s of [-1, 1]) head.add(sph(0.02, M.hair, [s * 0.083, 0.118, -0.002], [0.32, 1.3, 0.9]));
-  // goatee + moustache
-  jaw.add(sph(0.02, M.beard, [0, -0.055, 0.088], [1.0, 1.1, 0.45]));
-  const mst = new THREE.Mesh(new THREE.CapsuleGeometry(0.0055, 0.042, 4, 8), M.beard);
-  mst.scale.z = 0.6; mst.rotation.z = Math.PI / 2; mst.position.set(0, 0.043, 0.104); head.add(mst);
-  parts.mst = mst;
-  // stubble shell on jaw
-  const stub = sph(0.071, M.beard, [0, -0.02, 0.022], [1.09, 0.76, 1.01], 32);
-  stub.material = M.beard.clone(); stub.material.transparent = true; stub.material.opacity = 0.2;
-  jaw.add(stub);
+  const hairBase = new THREE.Mesh(hairG, hairMat);
+  hairBase.scale.set(0.9, 1.1, 1.02); hairBase.position.set(0, 0.103, -0.006); hairBase.rotation.x = -0.42; head.add(hairBase);
+
+  if (character === 'zack' || character === 'casual') {
+    // Zack D. classic quiff
+    const quiff = sph(0.07, hairMat, [0.01, 0.19, 0.035], [1.1, 0.55, 0.9]); quiff.rotation.z = -0.2; head.add(quiff);
+    for (const s of [-1, 1]) head.add(sph(0.02, hairMat, [s * 0.083, 0.118, -0.002], [0.32, 1.3, 0.9]));
+    // Zack goatee + moustache + subtle stubble
+    jaw.add(sph(0.02, M.beard, [0, -0.055, 0.088], [1.0, 1.1, 0.45]));
+    const mst = new THREE.Mesh(new THREE.CapsuleGeometry(0.0055, 0.042, 4, 8), M.beard);
+    mst.scale.z = 0.6; mst.rotation.z = Math.PI / 2; mst.position.set(0, 0.043, 0.104); head.add(mst);
+    parts.mst = mst;
+    const stub = sph(0.071, M.beard, [0, -0.02, 0.022], [1.09, 0.76, 1.01], 32);
+    stub.material = M.beard.clone(); stub.material.transparent = true; stub.material.opacity = 0.2;
+    jaw.add(stub);
+  } else if (character === 'tech') {
+    // Modern pompadour fade
+    const pomp = sph(0.075, hairMat, [0, 0.20, 0.025], [1.02, 0.62, 1.12]); pomp.rotation.x = -0.15; head.add(pomp);
+    for (const s of [-1, 1]) head.add(sph(0.022, hairMat, [s * 0.082, 0.125, 0.002], [0.35, 1.2, 0.85]));
+    // Sleek rectangular glasses
+    addGlasses(head, M, 'rect');
+  } else if (character === 'creator') {
+    // Messy wavy textured fringe / curtain mop
+    const mop = sph(0.078, hairMat, [0, 0.195, 0.03], [1.1, 0.58, 1.05]); head.add(mop);
+    head.add(sph(0.038, hairMat, [-0.025, 0.162, 0.088], [1.0, 0.75, 0.85]));
+    head.add(sph(0.040, hairMat, [0.028, 0.165, 0.090], [1.0, 0.75, 0.85]));
+    for (const s of [-1, 1]) head.add(sph(0.025, hairMat, [s * 0.085, 0.120, 0.005], [0.4, 1.2, 1.0]));
+  } else if (character === 'scientist') {
+    // Wavy peppered professor hair
+    const wavyTop = sph(0.082, hairMat, [0, 0.198, 0.015], [1.18, 0.62, 1.08]); head.add(wavyTop);
+    for (const s of [-1, 1]) head.add(sph(0.038, hairMat, [s * 0.084, 0.135, 0.005], [0.65, 1.15, 0.95]));
+    // Round wire glasses
+    addGlasses(head, M, 'round');
+    // Short trimmed beard + mustache
+    const fullBeard = sph(0.065, hairMat, [0, -0.035, 0.055], [1.12, 0.85, 0.9]); jaw.add(fullBeard);
+    const mst = new THREE.Mesh(new THREE.CapsuleGeometry(0.006, 0.046, 4, 8), hairMat);
+    mst.scale.z = 0.6; mst.rotation.z = Math.PI / 2; mst.position.set(0, 0.043, 0.104); head.add(mst);
+    parts.mst = mst;
+  }
+
   // mouth
   const mouth = sph(0.02, M.mouth, [0, 0.026, 0.097], [1.1, 0.1, 0.45]); head.add(mouth);
   const lipU = sph(0.02, M.lip, [0, 0.031, 0.099], [1.1, 0.16, 0.42]); head.add(lipU);
   const lipL = sph(0.019, M.lip, [0, 0.019, 0.096], [1.0, 0.2, 0.42]); jaw.add(lipL); lipL.position.y -= 0.06;
   const teeth = sph(0.016, M.teeth, [0, 0.03, 0.093], [1.2, 0.3, 0.4]); head.add(teeth);
+
   if (hood) {
     const hd = new THREE.Mesh(new THREE.SphereGeometry(0.135, 48, 24, 0, Math.PI * 2, 0, 2.0), M.cloth);
     hd.scale.set(0.95, 1.12, 1.08); hd.position.set(0, 0.095, -0.025); hd.rotation.x = -0.75; head.add(hd);
@@ -144,7 +205,7 @@ function buildHead(M, { helmet = false, hood = false } = {}) {
     mouth.position.y = 0.026 - v * 0.012;
     teeth.visible = v > 0.15; teeth.position.y = 0.03 + v * 0.002;
     lipU.position.y = 0.032 + v * 0.004;
-    parts.mst.position.y = 0.043 + v * 0.004;
+    if (parts.mst) parts.mst.position.y = 0.043 + v * 0.004;
     parts['brow-1'].position.y = parts['brow1'].position.y = 0.136 - v * 0.006;
     parts['brow-1'].rotation.z = Math.PI / 2 - 0.18 - v * 0.25;
     parts['brow1'].rotation.z = Math.PI / 2 + 0.18 + v * 0.25;
@@ -238,12 +299,45 @@ function buildHand(M, mat, side) {
 }
 
 // ---------- full character ----------
-// outfit: 'vest' | 'chainmail' | 'plate' | 'knight' | 'archer'
-export function makeHuman(outfit = 'plate', opts = {}) {
+// character / outfit: 'zack' | 'tech' | 'creator' | 'scientist' | 'knight' | 'archer' | 'vest'
+export function makeHuman(outfit = 'zack', opts = {}) {
   const M = materials();
-  const knight = outfit === 'knight';
-  const limbMat = knight ? M.steel : (outfit === 'archer' ? M.clothGrey : M.cloth);
-  const legMat = knight ? M.steel : M.cloth;
+  const charType = outfit.toLowerCase();
+  const knight = charType === 'knight';
+
+  // Wardrobe determination
+  let shirtMat = M.clothNavy; // default Zack
+  let pantsMat = M.clothGrey;
+  let shoeMat = M.sneakerWhite;
+  let armMat = M.clothNavy;
+
+  if (charType === 'tech') {
+    shirtMat = M.clothCharcoal;
+    pantsMat = M.cloth;
+    shoeMat = M.cloth;
+    armMat = M.clothCharcoal;
+  } else if (charType === 'creator') {
+    shirtMat = M.clothCrimson;
+    pantsMat = M.clothCharcoal;
+    shoeMat = M.sneakerWhite;
+    armMat = M.clothCrimson;
+  } else if (charType === 'scientist') {
+    shirtMat = M.clothTeal;
+    pantsMat = M.clothKhaki;
+    shoeMat = M.shoeLeather;
+    armMat = M.clothLabCoat;
+  } else if (charType === 'knight') {
+    shirtMat = M.steel;
+    pantsMat = M.steel;
+    shoeMat = M.steel;
+    armMat = M.steel;
+  } else if (charType === 'archer') {
+    shirtMat = M.cloth;
+    pantsMat = M.cloth;
+    shoeMat = M.cloth;
+    armMat = M.clothGrey;
+  }
+
   const handMat = knight ? M.steelDark : M.skin;
   const thick = knight ? 0.014 : 0;
 
@@ -253,17 +347,53 @@ export function makeHuman(outfit = 'plate', opts = {}) {
   const chest = new THREE.Group(); chest.position.y = 0.2; spine.add(chest); // upper spine pivot
   const j = { root, pelvis, spine, chest };
 
-  // body: lower torso on spine, upper torso on chest (both lathe pieces)
-  const bodyMat = knight ? M.steel : (outfit === 'archer' ? M.cloth : M.cloth);
-  const lower = new THREE.Mesh(torsoShell(-0.18, 0.2, 0), bodyMat); spine.add(lower);
+  // Lower torso on spine (pants waist / shirt tuck)
+  const lower = new THREE.Mesh(torsoShell(-0.18, 0.2, 0), pantsMat); spine.add(lower);
+  // Upper torso on chest (shirt / sweater / hoodie)
   const upperG = torsoShell(0.18, 0.58, 0); upperG.translate(0, -0.2, 0);
-  const upper = new THREE.Mesh(upperG, bodyMat); chest.add(upper);
+  const upper = new THREE.Mesh(upperG, shirtMat); chest.add(upper);
+
+  // Waistband / Belt trim (clean tailored separation between shirt and pants)
+  if (!knight && outfit !== 'archer') {
+    const belt = rim(0.01, 0.006, 0.007, M.clothCharcoal);
+    spine.add(belt);
+    const buckle = new THREE.Mesh(new THREE.BoxGeometry(0.026, 0.018, 0.005), M.steelBright);
+    buckle.position.set(0, 0.01, 0.112);
+    spine.add(buckle);
+  }
+
+  // Scientist crisp white lab coat outer drape + lapels & buttons
+  if (charType === 'scientist') {
+    const coatG = torsoShell(-0.16, 0.56, 0.018); coatG.translate(0, -0.2, 0);
+    const coat = new THREE.Mesh(coatG, M.clothLabCoat);
+    chest.add(coat);
+    // Lapels revealing teal sweater
+    const lapelL = new THREE.Mesh(new THREE.BoxGeometry(0.026, 0.20, 0.006), M.clothLabCoat);
+    lapelL.position.set(0.052, 0.16, 0.122); lapelL.rotation.z = -0.22; chest.add(lapelL);
+    const lapelR = new THREE.Mesh(new THREE.BoxGeometry(0.026, 0.20, 0.006), M.clothLabCoat);
+    lapelR.position.set(-0.052, 0.16, 0.122); lapelR.rotation.z = 0.22; chest.add(lapelR);
+    for (let i = 0; i < 3; i++) {
+      const btn = sph(0.0045, M.clothCharcoal, [0, 0.04 - i * 0.07, 0.125]);
+      chest.add(btn);
+    }
+  }
+
+  // Creator hoodie drawstrings accent
+  if (charType === 'creator') {
+    for (const s of [-1, 1]) {
+      const str = new THREE.Mesh(new THREE.CylinderGeometry(0.0025, 0.0025, 0.12, 8), M.sneakerWhite);
+      str.position.set(s * 0.038, 0.22, 0.135);
+      chest.add(str);
+    }
+  }
 
   // neck + head
   const neck = new THREE.Group(); neck.position.y = 0.36; chest.add(neck);
-  const neckM = new THREE.Mesh(new THREE.CylinderGeometry(0.048, 0.055, 0.12, 24), knight ? M.steelDark : M.skin);
+  const neckMat = (charType === 'tech') ? M.clothCharcoal : (knight ? M.steelDark : M.skin);
+  const neckM = new THREE.Mesh(new THREE.CylinderGeometry(0.048, 0.055, 0.12, 24), neckMat);
   neckM.position.y = 0.04; neck.add(neckM);
-  const H = buildHead(M, { helmet: knight, hood: outfit === 'archer' });
+  const headChar = (charType === 'casual') ? 'zack' : charType;
+  const H = buildHead(M, { character: headChar, helmet: knight, hood: charType === 'archer' });
   H.head.position.y = 0.085; neck.add(H.head);
   j.neck = neck; j.head = H.head;
 
@@ -271,26 +401,31 @@ export function makeHuman(outfit = 'plate', opts = {}) {
   for (const s of [1, -1]) {
     const k = s > 0 ? 'l' : 'r';
     const sh = new THREE.Group(); sh.position.set(s * 0.205, 0.26, -0.005); chest.add(sh);
-    sh.add(sph(0.062 + thick, limbMat, [0, -0.01, 0]));
-    sh.add(cap(0.052 + thick, 0.24, limbMat));
+    sh.add(sph(0.062 + thick, armMat, [0, -0.01, 0]));
+    sh.add(cap(0.052 + thick, 0.24, armMat));
     const el = new THREE.Group(); el.position.y = -0.3; sh.add(el);
-    el.add(sph(0.046 + thick, limbMat));
-    el.add(cap(0.043 + thick, 0.21, limbMat));
+    el.add(sph(0.046 + thick, armMat));
+    el.add(cap(0.043 + thick, 0.21, armMat));
     const wr = new THREE.Group(); wr.position.y = -0.27; el.add(wr);
     wr.add(buildHand(M, handMat, s));
     j[k + 'Sh'] = sh; j[k + 'El'] = el; j[k + 'Wr'] = wr;
-    // legs
+
+    // legs & shoes
     const hip = new THREE.Group(); hip.position.set(s * 0.095, -0.06, 0); pelvis.add(hip);
-    hip.add(cap(0.078 + thick, 0.34, legMat));
+    hip.add(cap(0.078 + thick, 0.34, pantsMat));
     const kn = new THREE.Group(); kn.position.y = -0.44; hip.add(kn);
-    kn.add(sph(0.06 + thick, legMat));
-    kn.add(cap(0.056 + thick, 0.36, legMat));
+    kn.add(sph(0.06 + thick, pantsMat));
+    kn.add(cap(0.056 + thick, 0.36, pantsMat));
     const an = new THREE.Group(); an.position.y = -0.45; kn.add(an);
-    const footMat = knight ? M.steel : (outfit === 'archer' ? M.cloth : M.skin);
-    const ank = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.045, 0.11, 20), footMat); ank.position.y = 0.0; an.add(ank);
-    if (!knight) { const cuff = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.05, 20), legMat); cuff.position.y = 0.045; an.add(cuff); }
-    const foot = sph(0.05, footMat, [0, -0.035, 0.05], [0.95, 0.62, 2.3]); an.add(foot);
-    if (!knight && outfit !== 'archer') for (let t = 0; t < 5; t++) an.add(sph(0.011 - t * 0.0008, M.skin, [s * (-0.03 + t * 0.014), -0.055, 0.155 - t * 0.008]));
+
+    const ank = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.045, 0.11, 20), shoeMat); ank.position.y = 0.0; an.add(ank);
+    if (!knight) { const cuff = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.05, 20), pantsMat); cuff.position.y = 0.045; an.add(cuff); }
+    const foot = sph(0.05, shoeMat, [0, -0.035, 0.05], [0.95, 0.62, 2.3]); an.add(foot);
+    if (shoeMat === M.sneakerWhite) {
+      const sole = new THREE.Mesh(new THREE.BoxGeometry(0.088, 0.016, 0.22), M.sneakerWhite);
+      sole.position.set(0, -0.055, 0.05);
+      an.add(sole);
+    }
     j[k + 'Hip'] = hip; j[k + 'Kn'] = kn; j[k + 'An'] = an;
   }
 

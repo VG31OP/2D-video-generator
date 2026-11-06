@@ -53,6 +53,21 @@ export function materials() {
     gumPink: new THREE.MeshPhysicalMaterial({ color: 0xf472b6, roughness: 0.35, clearcoat: 0.6 }),
     organInternal: new THREE.MeshPhysicalMaterial({ color: 0x991b1b, roughness: 0.42, clearcoat: 0.3 }),
     acidGreen: new THREE.MeshPhysicalMaterial({ color: 0x84cc16, roughness: 0.1, transparent: true, opacity: 0.8, transmission: 0.7, emissive: 0x365314, emissiveIntensity: 0.5, ior: 1.34 }),
+    // ---------- Character Wardrobe & Styling Materials ----------
+    clothNavy: new THREE.MeshStandardMaterial({ color: 0x1e3a8a, roughness: 0.88, bumpMap: fab, bumpScale: 1.2 }),
+    clothCharcoal: new THREE.MeshStandardMaterial({ color: 0x27272a, roughness: 0.85, bumpMap: fab, bumpScale: 1.2 }),
+    clothCrimson: new THREE.MeshStandardMaterial({ color: 0x991b1b, roughness: 0.85, bumpMap: fab, bumpScale: 1.2 }),
+    clothEmerald: new THREE.MeshStandardMaterial({ color: 0x065f46, roughness: 0.85, bumpMap: fab, bumpScale: 1.2 }),
+    clothLabCoat: new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.68, bumpMap: fab, bumpScale: 1.0 }),
+    clothTeal: new THREE.MeshStandardMaterial({ color: 0x0e7490, roughness: 0.85, bumpMap: fab, bumpScale: 1.2 }),
+    clothKhaki: new THREE.MeshStandardMaterial({ color: 0x78716c, roughness: 0.90, bumpMap: fab, bumpScale: 1.2 }),
+    sneakerWhite: new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.32 }),
+    shoeLeather: new THREE.MeshPhysicalMaterial({ color: 0x451a03, roughness: 0.45, clearcoat: 0.35 }),
+    hairBlack: new THREE.MeshStandardMaterial({ color: 0x18181b, roughness: 0.85, bumpMap: fab, bumpScale: 2 }),
+    hairAuburn: new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.85, bumpMap: fab, bumpScale: 2 }),
+    hairGrey: new THREE.MeshStandardMaterial({ color: 0x64748b, roughness: 0.85, bumpMap: fab, bumpScale: 2 }),
+    glassesFrame: new THREE.MeshPhysicalMaterial({ color: 0x09090b, metalness: 0.6, roughness: 0.2, clearcoat: 0.8 }),
+    glassesLens: new THREE.MeshPhysicalMaterial({ color: 0xffffff, transparent: true, opacity: 0.32, roughness: 0.05, transmission: 0.9, ior: 1.5 }),
   };
   const cm = chainmailTextures([14, 9]);
   M.chainmail = new THREE.MeshPhysicalMaterial({
