@@ -59,6 +59,17 @@ class ScriptEngine:
                     "When mixed with trapped water, this starch turns into a sticky sludge that accelerates corrosion.",
                     "Which permanently fries your motherboard circuits faster than just letting it air dry."
                 ]
+            if any(w in t_lower for w in ["battery", "puncture", "explode"]):
+                return [
+                    "When a smartphone lithium-ion battery gets punctured by a sharp nail,",
+                    "some people assume the liquid chemicals inside instantly catch fire like gasoline.",
+                    "But in reality, what actually triggers the explosion is an internal thermal runaway.",
+                    "First, a microscopic plastic separator membrane between the positive and negative layers tears open.",
+                    "The cathode and anode make direct physical contact, creating a massive electrical short circuit.",
+                    "Uncontrolled current surges through the battery, spiking internal temperatures past six hundred degrees.",
+                    "This extreme heat instantly boils the flammable liquid electrolyte into high-pressure oxygen gas.",
+                    "Causing the metal casing to violently burst into an uncontrollable blowtorch of fire."
+                ]
             # General Smartphone / Gadget
             return [
                 f"When you use modern technology like {topic.rstrip('?.!')},",
