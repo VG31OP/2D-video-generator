@@ -156,74 +156,78 @@ function buildHead(M, { helmet = false, hood = false } = {}) {
 function buildHand(M, mat, side) {
   const g = new THREE.Group();
 
-  // 1. Wrist connection (tapered cylinder closing forearm gap)
-  const wrist = new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.038, 0.045, 16), mat);
-  wrist.position.set(0, -0.015, 0);
+  // 1. Smooth tapered wrist connecting forearm cuff to palm
+  const wrist = new THREE.Mesh(new THREE.CylinderGeometry(0.030, 0.036, 0.045, 24), mat);
+  wrist.position.set(0, -0.016, 0);
+  wrist.castShadow = true;
   g.add(wrist);
 
-  // 2. Anatomical Palm (rounded, properly proportioned)
-  const palm = new THREE.Mesh(new THREE.BoxGeometry(0.064, 0.064, 0.026), mat);
-  palm.position.set(0, -0.054, 0.004);
+  // 2. Fleshy, smooth stylized palm (no sharp box edges)
+  const palm = new THREE.Mesh(new THREE.SphereGeometry(0.034, 24, 18), mat);
+  palm.scale.set(1.05, 1.25, 0.65);
+  palm.position.set(0, -0.048, 0.002);
   palm.castShadow = palm.receiveShadow = true;
   g.add(palm);
 
-  const knucklePad = new THREE.Mesh(new THREE.SphereGeometry(0.020, 16, 12), mat);
-  knucklePad.scale.set(1.4, 0.5, 0.7);
-  knucklePad.position.set(0, -0.082, 0.006);
-  g.add(knucklePad);
+  // Soft knuckle ridge
+  const knuckle = new THREE.Mesh(new THREE.SphereGeometry(0.020, 20, 14), mat);
+  knuckle.scale.set(1.6, 0.6, 0.65);
+  knuckle.position.set(0, -0.076, 0.004);
+  knuckle.castShadow = true;
+  g.add(knuckle);
 
-  // 3. Four Articulated Fingers (Index, Middle, Ring, Pinky)
-  // For left hand (side=1): thumb is medial (-x), pinky is lateral (+x)
-  // For right hand (side=-1): thumb is medial (+x), pinky is lateral (-x)
+  // 3. Four natural articulated fingers (Index, Middle, Ring, Pinky)
+  // Left hand (side=1): thumb medial (-X), pinky lateral (+X)
+  // Right hand (side=-1): thumb medial (+X), pinky lateral (-X)
   const fingerData = [
-    { relX: -1.2, len: 0.038, rad: 0.0090, curl: 0.45 }, // index
-    { relX: -0.4, len: 0.042, rad: 0.0095, curl: 0.52 }, // middle
-    { relX:  0.4, len: 0.039, rad: 0.0090, curl: 0.55 }, // ring
-    { relX:  1.2, len: 0.032, rad: 0.0080, curl: 0.60 }  // pinky
+    { relX: -1.2, len: 0.038, rad: 0.0085, curl: 0.40 }, // index
+    { relX: -0.4, len: 0.042, rad: 0.0090, curl: 0.45 }, // middle
+    { relX:  0.4, len: 0.039, rad: 0.0088, curl: 0.48 }, // ring
+    { relX:  1.2, len: 0.032, rad: 0.0078, curl: 0.52 }  // pinky
   ];
 
   fingerData.forEach(f => {
-    const fx = side * f.relX * 0.018;
-    const fy = -0.082;
-    const fz = 0.006;
+    const fx = side * f.relX * 0.017;
+    const fy = -0.076;
+    const fz = 0.004;
 
     const fingerGroup = new THREE.Group();
     fingerGroup.position.set(fx, fy, fz);
 
-    // Proximal phalanx (angled forward)
+    // Proximal phalanx (slight forward tilt)
     const prox = new THREE.Mesh(new THREE.CapsuleGeometry(f.rad, f.len * 0.55, 6, 12), mat);
     prox.position.y = -f.len * 0.28;
     prox.rotation.x = f.curl;
     prox.castShadow = true;
     fingerGroup.add(prox);
 
-    // Distal phalanx (curling inward)
-    const dist = new THREE.Mesh(new THREE.CapsuleGeometry(f.rad * 0.9, f.len * 0.5, 6, 12), mat);
-    dist.position.set(0, -f.len * 0.46, Math.sin(f.curl) * f.len * 0.35);
-    dist.rotation.x = f.curl * 1.4;
+    // Distal phalanx (curling gracefully inward)
+    const dist = new THREE.Mesh(new THREE.CapsuleGeometry(f.rad * 0.85, f.len * 0.5, 6, 12), mat);
+    dist.position.set(0, -f.len * 0.46, Math.sin(f.curl) * f.len * 0.32);
+    dist.rotation.x = f.curl * 1.5;
     dist.castShadow = true;
     fingerGroup.add(dist);
 
     g.add(fingerGroup);
   });
 
-  // 4. Opposable Thumb
-  const thumbBaseX = side * -0.030;
-  const thumbBaseY = -0.040;
-  const thumbBaseZ = 0.012;
+  // 4. Opposable stylized thumb
+  const thumbBaseX = side * -0.028;
+  const thumbBaseY = -0.038;
+  const thumbBaseZ = 0.010;
 
   const thumbGroup = new THREE.Group();
   thumbGroup.position.set(thumbBaseX, thumbBaseY, thumbBaseZ);
-  thumbGroup.rotation.set(0.40, side * 0.35, side * 0.42);
+  thumbGroup.rotation.set(0.38, side * 0.42, side * 0.40);
 
-  const thumbProx = new THREE.Mesh(new THREE.CapsuleGeometry(0.010, 0.026, 6, 12), mat);
+  const thumbProx = new THREE.Mesh(new THREE.CapsuleGeometry(0.0095, 0.026, 6, 12), mat);
   thumbProx.position.y = -0.013;
   thumbProx.castShadow = true;
   thumbGroup.add(thumbProx);
 
-  const thumbDist = new THREE.Mesh(new THREE.CapsuleGeometry(0.009, 0.022, 6, 12), mat);
+  const thumbDist = new THREE.Mesh(new THREE.CapsuleGeometry(0.0085, 0.022, 6, 12), mat);
   thumbDist.position.set(0, -0.030, 0.005);
-  thumbDist.rotation.x = 0.32;
+  thumbDist.rotation.x = 0.35;
   thumbDist.castShadow = true;
   thumbGroup.add(thumbDist);
 

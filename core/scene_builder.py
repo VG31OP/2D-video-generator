@@ -124,7 +124,7 @@ export const CAPTIONS = {json.dumps(captions, indent=2)};
 export const FADES = [[{twist_fade_start}, {round(twist_fade_start+0.06, 2)}, {round(twist_fade_start+0.14, 2)}, {twist_fade_end}]];
 
 function idle(t, k = 1) {{ return Math.sin(t * 1.6) * 0.012 * k; }}
-const STAND = {{ lSh: [0.05, 0, 0.16], rSh: [0.05, 0, -0.16], lEl: [-0.25, 0, 0], rEl: [-0.25, 0, 0] }};
+const STAND = {{ lSh: [0.05, 0, 0.16], rSh: [0.05, 0, -0.16], lEl: [-0.18, 0, 0], rEl: [-0.18, 0, 0], lWr: [0, 1.25, 0], rWr: [0, -1.25, 0] }};
 
 function standPose(h, t, extra = {{}}) {{
   const p = {{ ...STAND, ...extra }};
@@ -331,7 +331,7 @@ export const CAPTIONS = {json.dumps(captions, indent=2)};
 export const FADES = [[{twist_fade_start}, {round(twist_fade_start+0.06, 2)}, {round(twist_fade_start+0.14, 2)}, {twist_fade_end}]];
 
 function idle(t, k = 1) {{ return Math.sin(t * 1.6) * 0.012 * k; }}
-const STAND = {{ lSh: [0.05, 0, 0.16], rSh: [0.05, 0, -0.16], lEl: [-0.25, 0, 0], rEl: [-0.25, 0, 0] }};
+const STAND = {{ lSh: [0.05, 0, 0.16], rSh: [0.05, 0, -0.16], lEl: [-0.18, 0, 0], rEl: [-0.18, 0, 0], lWr: [0, 1.25, 0], rWr: [0, -1.25, 0] }};
 
 function standPose(h, t, extra = {{}}) {{
   const p = {{ ...STAND, ...extra }};
@@ -500,7 +500,8 @@ function shot8({{ makeStage }}) {{
       fire.update(lt);
       sp.update(lt);
       standPose(man, lt, {{
-        rSh: [0.95, -0.3, 0.4], lSh: [0.95, 0.3, -0.4],
+        rSh: [-0.80, -0.25, -0.35], lSh: [-0.80, 0.25, 0.35],
+        rEl: [-1.0, 0, 0], lEl: [-1.0, 0, 0],
         head: [-0.15, 0, 0]
       }});
       c.position.set(0.12, 1.45, 1.85);
@@ -541,7 +542,7 @@ export const CAPTIONS = {json.dumps(captions, indent=2)};
 export const FADES = [[{twist_fade_start}, {round(twist_fade_start+0.06, 2)}, {round(twist_fade_start+0.14, 2)}, {twist_fade_end}]];
 
 function idle(t, k = 1) {{ return Math.sin(t * 1.6) * 0.012 * k; }}
-const STAND = {{ lSh: [0.05, 0, 0.16], rSh: [0.05, 0, -0.16], lEl: [-0.25, 0, 0], rEl: [-0.25, 0, 0] }};
+const STAND = {{ lSh: [0.05, 0, 0.16], rSh: [0.05, 0, -0.16], lEl: [-0.18, 0, 0], rEl: [-0.18, 0, 0], lWr: [0, 1.25, 0], rWr: [0, -1.25, 0] }};
 
 function standPose(h, t, extra = {{}}) {{
   const p = {{ ...STAND, ...extra }};
@@ -560,13 +561,18 @@ function shot1({{ makeStage }}) {{
     scene, camera: c,
     update(lt, gt) {{
       standPose(man, lt, {{
-        rSh: [lerp(0.3, 0.88, range(lt, 0, 1.6)), -0.22, 0.35],
-        rEl: [-1.1, 0, 0],
-        head: [lerp(0.05, -0.12, range(lt, 0.8, 2.0)), 0, 0]
+        rSh: [lerp(-0.45, -0.92, range(lt, 0, 1.8)), 0.38, -0.05],
+        rEl: [lerp(-0.55, -1.35, range(lt, 0, 1.8)), 0, -0.12],
+        rWr: [-0.15, 0.40, 0.20],
+        head: [lerp(0.05, -0.15, range(lt, 0.8, 2.2)), 0, 0]
       }});
-      const gy = lerp(1.22, 1.48, range(lt, 0.2, 1.8));
-      const gz = lerp(0.35, 0.12, range(lt, 0.2, 1.8));
-      gum.position.set(0.06, gy, gz);
+      const gy = lerp(1.15, 1.46, range(lt, 0.2, 1.8));
+      const gz = lerp(0.38, 0.12, range(lt, 0.2, 1.8));
+      const gx = lerp(0.02, 0.04, range(lt, 0.2, 1.8));
+      gum.position.set(gx, gy, gz);
+      if (lt > 2.0) {{
+        gum.scale.multiplyScalar(0.92);
+      }}
       c.position.set(0.18, 1.44, 1.75);
       c.lookAt(0.05, 1.38, 0.1);
     }}
@@ -701,8 +707,8 @@ function shot8({{ makeStage }}) {{
     scene, camera: c,
     update(lt, gt) {{
       standPose(man, lt, {{
-        rSh: [0.72, -0.3, 0.35], rEl: [-0.65, 0, 0],
-        lSh: [0.15, 0.1, -0.15],
+        rSh: [-0.65, -0.22, 0.25], rEl: [-0.85, 0, 0], rWr: [0.2, 0.3, 0],
+        lSh: [0.05, 0, 0.16],
         head: [0.08, 0, 0]
       }});
       c.position.set(0.10, 1.45, 1.85);
@@ -743,7 +749,7 @@ export const CAPTIONS = {json.dumps(captions, indent=2)};
 export const FADES = [[{twist_fade_start}, {round(twist_fade_start+0.06, 2)}, {round(twist_fade_start+0.14, 2)}, {twist_fade_end}]];
 
 function idle(t, k = 1) {{ return Math.sin(t * 1.6) * 0.012 * k; }}
-const STAND = {{ lSh: [0.05, 0, 0.16], rSh: [0.05, 0, -0.16], lEl: [-0.25, 0, 0], rEl: [-0.25, 0, 0] }};
+const STAND = {{ lSh: [0.05, 0, 0.16], rSh: [0.05, 0, -0.16], lEl: [-0.18, 0, 0], rEl: [-0.18, 0, 0], lWr: [0, 1.25, 0], rWr: [0, -1.25, 0] }};
 
 function standPose(h, t, extra = {{}}) {{
   const p = {{ ...STAND, ...extra }};
@@ -763,7 +769,7 @@ function shot1({{ makeStage }}) {{
     scene, camera: c,
     update(lt, gt) {{
       standPose(man, lt, {{
-        rSh: [0.65, -0.15, 0.28], rEl: [-0.85, 0, 0],
+        rSh: [-0.65, -0.15, 0.22], rEl: [-0.88, 0, -0.1], rWr: [-0.15, 0.2, 0],
         head: [0.18, 0, 0]
       }});
       phone.rotation.y = Math.sin(lt * 0.8) * 0.2;
@@ -897,7 +903,8 @@ function shot8({{ makeStage }}) {{
     scene, camera: c,
     update(lt, gt) {{
       standPose(man, lt, {{
-        rSh: [0.55, -0.15, 0.25], lSh: [0.55, 0.15, -0.25],
+        rSh: [-0.55, -0.15, 0.22], lSh: [-0.55, 0.15, -0.22],
+        rEl: [-0.85, 0, 0], lEl: [-0.85, 0, 0],
         head: [0.05, 0, 0]
       }});
       phone.rotation.y = Math.sin(lt * 1.2) * 0.3;
