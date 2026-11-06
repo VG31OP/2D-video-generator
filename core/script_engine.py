@@ -108,6 +108,19 @@ class ScriptEngine:
                 "Allowing the heavy landing gear to smoothly kiss the tarmac with zero human hands on the yoke."
             ]
 
+        # Domain 2c: Everyday Physics & Appliances (Microwaves)
+        elif any(w in t_lower for w in ["microwave", "oven", "magnetron", "cook food", "heat food"]):
+            return [
+                "When you heat up cold leftovers inside a microwave oven,",
+                "some people assume the microwave heats your food from the inside out.",
+                "But in reality, microwaves actually heat food from the outside in using molecular friction.",
+                "First, a vacuum tube called a cavity magnetron converts electricity into electromagnetic waves.",
+                "These waves bounce off the metal walls and penetrate only an inch or two into your food.",
+                "The alternating field forces polar water molecules to flip back and forth over two billion times per second.",
+                "This violent molecular collision creates intense frictional heat that spreads inward through thermal conduction.",
+                "Which is why the outer edges get piping hot while the very center can stay completely frozen."
+            ]
+
         # Domain 3: Human Biology, Body & Medical
         elif any(w in t_lower for w in ["body", "brain", "heart", "sleep", "dream", "caffeine", "coffee", "muscle", "eye", "ear", "blood", "gum", "swallow"]):
             if "gum" in t_lower:
