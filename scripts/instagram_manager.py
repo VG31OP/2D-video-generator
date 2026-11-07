@@ -97,12 +97,13 @@ def cmd_upload_reel(args):
         print("=" * 55 + "\n")
 
         if getattr(args, "boost", False) and media_id:
-            print("[+] Auto-boosting reel (like, comment, story share)...")
+            story_enabled = getattr(args, "story", False)
+            print(f"[+] Auto-boosting reel (like, comment{', story share' if story_enabled else ''})...")
             instagram_service.post_reel_engagement(
                 media_id=media_id,
                 comment_text=args.comment or "Drop a ❤️ and save this for later! Follow @vrj.ai for more secret AI & tech hacks! 🚀",
                 like=True,
-                share_story=True,
+                share_story=story_enabled,
                 video_path=str(video_path)
             )
 
@@ -136,12 +137,13 @@ def cmd_upload_project(args):
         print("=" * 55 + "\n")
 
         if getattr(args, "boost", False) and media_id:
-            print("[+] Auto-boosting project reel (like, comment, story share)...")
+            story_enabled = getattr(args, "story", False)
+            print(f"[+] Auto-boosting project reel (like, comment{', story share' if story_enabled else ''})...")
             instagram_service.post_reel_engagement(
                 media_id=media_id,
                 comment_text=args.comment or "Save this for later! 📌 Which AI tool are you trying first? Drop a comment below! 👇",
                 like=True,
-                share_story=True
+                share_story=story_enabled
             )
 
         return 0
@@ -254,12 +256,13 @@ def cmd_boost(args):
         print("[!] Please login first: python scripts/instagram_manager.py login")
         return 1
 
-    print(f"\n[+] Running post-reel boost on media: {args.media_id}...")
+    share_story = bool(getattr(args, "story", False) and not getattr(args, "no_story", False))
+    print(f"\n[+] Running post-reel boost on media: {args.media_id} (story share: {'ON' if share_story else 'OFF'})...")
     res = instagram_service.post_reel_engagement(
         media_id=args.media_id,
         comment_text=args.comment or "Drop a ❤️ if this helped! Follow @vrj.ai for more secret AI & tech tools! 🚀",
         like=True,
-        share_story=not args.no_story
+        share_story=share_story
     )
     print(f"    - Liked own reel     : {'[✓]' if res['liked'] else '[✗]'}")
     print(f"    - Posted CTA comment : {'[✓]' if res['commented'] else '[✗]'}")
@@ -289,14 +292,16 @@ def main():
     p_upload.add_argument("--video", "-v", required=True, help="Path to MP4 video")
     p_upload.add_argument("--caption", help="Caption text with hashtags")
     p_upload.add_argument("--thumb", help="Optional path to custom cover image")
-    p_upload.add_argument("--boost", action="store_true", help="Automatically like, comment, and share to story after upload")
+    p_upload.add_argument("--boost", action="store_true", help="Automatically like and comment after upload")
+    p_upload.add_argument("--story", action="store_true", help="Also share to Story during boost (default: False)")
     p_upload.add_argument("--comment", help="Custom comment for boost")
 
     # upload-project
     p_proj = subparsers.add_parser("upload-project", help="Upload a generated short project to Reels")
     p_proj.add_argument("--project-id", "-i", required=True, help="Project ID")
     p_proj.add_argument("--caption", help="Optional custom caption (otherwise generated from script)")
-    p_proj.add_argument("--boost", action="store_true", help="Automatically like, comment, and share to story after upload")
+    p_proj.add_argument("--boost", action="store_true", help="Automatically like and comment after upload")
+    p_proj.add_argument("--story", action="store_true", help="Also share to Story during boost (default: False)")
     p_proj.add_argument("--comment", help="Custom comment for boost")
 
     # list-reels
@@ -323,10 +328,11 @@ def main():
     p_story.add_argument("--caption", help="Optional story text caption")
 
     # boost
-    p_boost = subparsers.add_parser("boost", help="Run full post-reel engagement (like, comment, story)")
+    p_boost = subparsers.add_parser("boost", help="Run full post-reel engagement (like, comment, optional story)")
     p_boost.add_argument("--media-id", "-m", required=True, help="Media ID or Instagram URL")
     p_boost.add_argument("--comment", help="Custom comment text")
-    p_boost.add_argument("--no-story", action="store_true", help="Skip story sharing")
+    p_boost.add_argument("--story", action="store_true", help="Share reel to Instagram Story (default: False)")
+    p_boost.add_argument("--no-story", action="store_true", help="Deprecated alias (Story sharing is disabled by default)")
 
     args = parser.parse_args()
 

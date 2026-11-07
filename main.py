@@ -61,9 +61,14 @@ def main():
         help="Save render and metadata into storage/drafts/ for review"
     )
     parser.add_argument(
+        "--story",
+        action="store_true",
+        help="Share the published reel to Instagram Story during engagement boost (default: False)"
+    )
+    parser.add_argument(
         "--no-story",
         action="store_true",
-        help="Do not share the published reel to Instagram Story during engagement boost"
+        help="Deprecated alias (Story sharing is disabled by default)"
     )
     parser.add_argument(
         "--script-file",
@@ -184,9 +189,13 @@ def main():
     elif publish:
         active_account = " (Will prompt for your login)"
 
+    share_story = bool(args.story and not args.no_story)
+
     print_banner()
     print(f"🎯 Target Topic : {topic}")
     print(f"🚀 Publish Reel : {'YES' + active_account if publish else 'NO (Local Render Only)'}")
+    if publish:
+        print(f"📸 Story Share  : {'YES' if share_story else 'NO (Default: Feed Reel Only)'}")
     print(f"💾 Save Draft   : {'YES' if args.draft else 'NO'}")
     print("-" * 70)
 
@@ -197,7 +206,7 @@ def main():
             draft=args.draft,
             custom_script=custom_script,
             credentials=credentials,
-            share_story=not args.no_story
+            share_story=share_story
         )
 
         print("\n" + "=" * 70)

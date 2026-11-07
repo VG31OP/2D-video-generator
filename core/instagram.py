@@ -197,14 +197,14 @@ class InstagramPublisher:
         media_id: str,
         comment_text: Optional[str] = None,
         like: bool = True,
-        share_story: bool = True,
+        share_story: bool = False,
         video_path: Optional[str] = None
     ) -> Dict[str, Any]:
         """
         Executes automated algorithm boost immediately after upload:
         1. Self-likes the reel.
         2. Posts a high-engagement CTA comment.
-        3. Shares the reel to Story.
+        3. Shares the reel to Story (optional, default: False).
         """
         cl = self.get_client()
         if not cl:

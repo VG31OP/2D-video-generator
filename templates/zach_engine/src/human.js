@@ -104,6 +104,7 @@ function buildHead(M, { character = 'zack', helmet = false, hood = false } = {})
   if (helmet) {
     const h = sph(0.128, M.steel, [0, 0.1, 0], [0.92, 1.12, 1.02], 48);
     head.add(h);
+    // visor slit + face plate
     const plate = new THREE.Mesh(new THREE.SphereGeometry(0.131, 48, 24, -0.9, 1.8, 0.9, 1.3), M.steelDark);
     plate.scale.set(0.92, 1.12, 1.04); plate.position.y = 0.1; head.add(plate);
     const slit = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.012, 0.03), M.mouth);
@@ -214,89 +215,89 @@ function buildHead(M, { character = 'zack', helmet = false, hood = false } = {})
   return { head, jaw, setMouth };
 }
 
-function buildHand(M, mat, side) {
-  const g = new THREE.Group();
+    function buildHand(M, mat, side) {
+      const g = new THREE.Group();
 
-  // 1. Smooth tapered wrist connecting forearm cuff to palm
-  const wrist = new THREE.Mesh(new THREE.CylinderGeometry(0.030, 0.036, 0.045, 24), mat);
-  wrist.position.set(0, -0.016, 0);
-  wrist.castShadow = true;
-  g.add(wrist);
+      // 1. Smooth tapered wrist connecting forearm cuff to palm
+      const wrist = new THREE.Mesh(new THREE.CylinderGeometry(0.030, 0.036, 0.045, 24), mat);
+      wrist.position.set(0, -0.016, 0);
+      wrist.castShadow = true;
+      g.add(wrist);
 
-  // 2. Fleshy, smooth stylized palm (no sharp box edges)
-  const palm = new THREE.Mesh(new THREE.SphereGeometry(0.034, 24, 18), mat);
-  palm.scale.set(1.05, 1.25, 0.65);
-  palm.position.set(0, -0.048, 0.002);
-  palm.castShadow = palm.receiveShadow = true;
-  g.add(palm);
+      // 2. Fleshy, smooth stylized palm (no sharp box edges)
+      const palm = new THREE.Mesh(new THREE.SphereGeometry(0.034, 24, 18), mat);
+      palm.scale.set(1.05, 1.25, 0.65);
+      palm.position.set(0, -0.048, 0.002);
+      palm.castShadow = palm.receiveShadow = true;
+      g.add(palm);
 
-  // Soft knuckle ridge
-  const knuckle = new THREE.Mesh(new THREE.SphereGeometry(0.020, 20, 14), mat);
-  knuckle.scale.set(1.6, 0.6, 0.65);
-  knuckle.position.set(0, -0.076, 0.004);
-  knuckle.castShadow = true;
-  g.add(knuckle);
+      // Soft knuckle ridge
+      const knuckle = new THREE.Mesh(new THREE.SphereGeometry(0.020, 20, 14), mat);
+      knuckle.scale.set(1.6, 0.6, 0.65);
+      knuckle.position.set(0, -0.076, 0.004);
+      knuckle.castShadow = true;
+      g.add(knuckle);
 
-  // 3. Four natural articulated fingers (Index, Middle, Ring, Pinky)
-  // Left hand (side=1): thumb medial (-X), pinky lateral (+X)
-  // Right hand (side=-1): thumb medial (+X), pinky lateral (-X)
-  const fingerData = [
-    { relX: -1.2, len: 0.038, rad: 0.0085, curl: 0.40 }, // index
-    { relX: -0.4, len: 0.042, rad: 0.0090, curl: 0.45 }, // middle
-    { relX:  0.4, len: 0.039, rad: 0.0088, curl: 0.48 }, // ring
-    { relX:  1.2, len: 0.032, rad: 0.0078, curl: 0.52 }  // pinky
-  ];
+      // 3. Four natural articulated fingers (Index, Middle, Ring, Pinky)
+      // Left hand (side=1): thumb medial (-X), pinky lateral (+X)
+      // Right hand (side=-1): thumb medial (+X), pinky lateral (-X)
+      const fingerData = [
+        { relX: -1.2, len: 0.038, rad: 0.0085, curl: 0.40 }, // index
+        { relX: -0.4, len: 0.042, rad: 0.0090, curl: 0.45 }, // middle
+        { relX: 0.4, len: 0.039, rad: 0.0088, curl: 0.48 }, // ring
+        { relX: 1.2, len: 0.032, rad: 0.0078, curl: 0.52 }  // pinky
+      ];
 
-  fingerData.forEach(f => {
-    const fx = side * f.relX * 0.017;
-    const fy = -0.076;
-    const fz = 0.004;
+      fingerData.forEach(f => {
+        const fx = side * f.relX * 0.017;
+        const fy = -0.076;
+        const fz = 0.004;
 
-    const fingerGroup = new THREE.Group();
-    fingerGroup.position.set(fx, fy, fz);
+        const fingerGroup = new THREE.Group();
+        fingerGroup.position.set(fx, fy, fz);
 
-    // Proximal phalanx (slight forward tilt)
-    const prox = new THREE.Mesh(new THREE.CapsuleGeometry(f.rad, f.len * 0.55, 6, 12), mat);
-    prox.position.y = -f.len * 0.28;
-    prox.rotation.x = f.curl;
-    prox.castShadow = true;
-    fingerGroup.add(prox);
+        // Proximal phalanx (slight forward tilt)
+        const prox = new THREE.Mesh(new THREE.CapsuleGeometry(f.rad, f.len * 0.55, 6, 12), mat);
+        prox.position.y = -f.len * 0.28;
+        prox.rotation.x = f.curl;
+        prox.castShadow = true;
+        fingerGroup.add(prox);
 
-    // Distal phalanx (curling gracefully inward)
-    const dist = new THREE.Mesh(new THREE.CapsuleGeometry(f.rad * 0.85, f.len * 0.5, 6, 12), mat);
-    dist.position.set(0, -f.len * 0.46, Math.sin(f.curl) * f.len * 0.32);
-    dist.rotation.x = f.curl * 1.5;
-    dist.castShadow = true;
-    fingerGroup.add(dist);
+        // Distal phalanx (curling gracefully inward)
+        const dist = new THREE.Mesh(new THREE.CapsuleGeometry(f.rad * 0.85, f.len * 0.5, 6, 12), mat);
+        dist.position.set(0, -f.len * 0.46, Math.sin(f.curl) * f.len * 0.32);
+        dist.rotation.x = f.curl * 1.5;
+        dist.castShadow = true;
+        fingerGroup.add(dist);
 
-    g.add(fingerGroup);
-  });
+        g.add(fingerGroup);
+      });
 
-  // 4. Opposable stylized thumb
-  const thumbBaseX = side * -0.028;
-  const thumbBaseY = -0.038;
-  const thumbBaseZ = 0.010;
+      // 4. Opposable stylized thumb
+      const thumbBaseX = side * -0.028;
+      const thumbBaseY = -0.038;
+      const thumbBaseZ = 0.010;
 
-  const thumbGroup = new THREE.Group();
-  thumbGroup.position.set(thumbBaseX, thumbBaseY, thumbBaseZ);
-  thumbGroup.rotation.set(0.38, side * 0.42, side * 0.40);
+      const thumbGroup = new THREE.Group();
+      thumbGroup.position.set(thumbBaseX, thumbBaseY, thumbBaseZ);
+      thumbGroup.rotation.set(0.38, side * 0.42, side * 0.40);
 
-  const thumbProx = new THREE.Mesh(new THREE.CapsuleGeometry(0.0095, 0.026, 6, 12), mat);
-  thumbProx.position.y = -0.013;
-  thumbProx.castShadow = true;
-  thumbGroup.add(thumbProx);
+      const thumbProx = new THREE.Mesh(new THREE.CapsuleGeometry(0.0095, 0.026, 6, 12), mat);
+      thumbProx.position.y = -0.013;
+      thumbProx.castShadow = true;
+      thumbGroup.add(thumbProx);
 
-  const thumbDist = new THREE.Mesh(new THREE.CapsuleGeometry(0.0085, 0.022, 6, 12), mat);
-  thumbDist.position.set(0, -0.030, 0.005);
-  thumbDist.rotation.x = 0.35;
-  thumbDist.castShadow = true;
-  thumbGroup.add(thumbDist);
+      const thumbDist = new THREE.Mesh(new THREE.CapsuleGeometry(0.0085, 0.022, 6, 12), mat);
+      thumbDist.position.set(0, -0.030, 0.005);
+      thumbDist.rotation.x = 0.35;
+      thumbDist.castShadow = true;
+      thumbGroup.add(thumbDist);
 
-  g.add(thumbGroup);
+      g.add(thumbGroup);
 
-  shadowAll(g);
-  return g;
-}
+      shadowAll(g);
+      return g;
+    }
 
 // ---------- full character ----------
 // character / outfit: 'zack' | 'tech' | 'creator' | 'scientist' | 'knight' | 'archer' | 'vest'
@@ -397,7 +398,7 @@ export function makeHuman(outfit = 'zack', opts = {}) {
   H.head.position.y = 0.085; neck.add(H.head);
   j.neck = neck; j.head = H.head;
 
-  // arms
+  // arms & legs
   for (const s of [1, -1]) {
     const k = s > 0 ? 'l' : 'r';
     const sh = new THREE.Group(); sh.position.set(s * 0.205, 0.26, -0.005); chest.add(sh);
@@ -417,7 +418,6 @@ export function makeHuman(outfit = 'zack', opts = {}) {
     kn.add(sph(0.06 + thick, pantsMat));
     kn.add(cap(0.056 + thick, 0.36, pantsMat));
     const an = new THREE.Group(); an.position.y = -0.45; kn.add(an);
-
     const ank = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.045, 0.11, 20), shoeMat); ank.position.y = 0.0; an.add(ank);
     if (!knight) { const cuff = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.05, 20), pantsMat); cuff.position.y = 0.045; an.add(cuff); }
     const foot = sph(0.05, shoeMat, [0, -0.035, 0.05], [0.95, 0.62, 2.3]); an.add(foot);

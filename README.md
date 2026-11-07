@@ -83,7 +83,7 @@ This engine transforms a complex 3D animation and video editing pipeline into an
 - **Studio Neural Voice** — Kokoro ONNX neural speech (`am_michael` 1.12x) with sub-word phoneme alignment (with zero-download Edge-TTS auto-fallback).
 - **Word-Level Kinetic Bounce Subtitles** — 1-to-3 words per flash, positioned safely above `MarginV = 440` so Instagram/TikTok UI buttons never cover text.
 - **Broadcast Loudness Normalization** — FFmpeg EBU R128 loudness normalization (`-14 LUFS, -1.5 dBFS True Peak, 48kHz AAC stereo`).
-- **Autonomous Instagram Reels Growth** — Direct 1080x1920 MP4 upload to **YOUR personal or brand account**, automated self-like, pinned CTA comment, and story reshare.
+- **Autonomous Instagram Reels Growth** — Direct 1080x1920 MP4 upload to **YOUR personal or brand account**, automated self-like, pinned CTA comment, and optional story reshare (`--story`).
 - **Agent-Native by Design** — Built with [`CLAUDE.md`](CLAUDE.md) and [`AGENTS.md`](AGENTS.md) so Claude Code, Antigravity, Cursor, and Codex can run it autonomously.
 
 ---
@@ -214,7 +214,8 @@ python main.py [TOPIC] [OPTIONS]
 | `topic` | Title or topic for the explainer reel (e.g., `"How OLED Screens Burn In"`). |
 | `--login` | Connect or switch to your personal/brand Instagram account. |
 | `--logout` | Disconnect and clear locally stored Instagram session. |
-| `--publish` | Uploads directly to Instagram Reels and executes automated engagement boost. |
+| `--publish` | Uploads directly to Instagram Reels and executes automated engagement boost (no story by default). |
+| `--story` | Also reshares the published reel to Instagram Story during boost (default: False). |
 | `--no-publish` | Renders the master 1080x1920 MP4 locally without uploading. |
 | `--draft` | Saves master MP4 and JSON metadata into `storage/drafts/` for offline review. |
 | `--status` | Displays connected Instagram profile handle, follower count, and total reels. |

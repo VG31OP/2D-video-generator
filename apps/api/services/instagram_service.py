@@ -326,14 +326,14 @@ class InstagramService:
         media_id: str,
         comment_text: Optional[str] = None,
         like: bool = True,
-        share_story: bool = True,
+        share_story: bool = False,
         video_path: Optional[str] = None
     ) -> Dict[str, Any]:
         """
         Executes complete post-reel growth actions:
         1. Likes own reel
         2. Leaves high-engagement pinned first comment
-        3. Shares reel to Instagram Story
+        3. Shares reel to Instagram Story (optional, default: False)
         """
         actions = {"liked": False, "commented": False, "shared_to_story": False, "errors": []}
 

@@ -32,7 +32,7 @@ class Pipeline:
         draft: bool = False,
         custom_script: Optional[List[str]] = None,
         credentials: Optional[Dict[str, str]] = None,
-        share_story: bool = True
+        share_story: bool = False
     ) -> Dict[str, Any]:
         """
         Executes the end-to-end autonomous video creation and publishing workflow.

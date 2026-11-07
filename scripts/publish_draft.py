@@ -44,6 +44,7 @@ def main():
     parser.add_argument("--id", type=str, default="zach_touchscreens", help="Project ID / Draft folder name")
     parser.add_argument("--list", action="store_true", help="List all saved drafts")
     parser.add_argument("--trial", action="store_true", help="Publish as an unlisted Trial Reel (hidden from feed)")
+    parser.add_argument("--story", action="store_true", help="Also share to Story during engagement boost (default: False)")
     args = parser.parse_args()
 
     drafts = list_drafts()
@@ -106,7 +107,7 @@ def main():
                 media_id=media_id,
                 comment_text=manifest.get("pinned_comment"),
                 like=True,
-                share_story=True,
+                share_story=args.story,
                 video_path=str(video_path)
             )
             print(f"    - Liked own reel     : {'[✓]' if boost.get('liked') else '[✗]'}")

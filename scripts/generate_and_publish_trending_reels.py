@@ -192,7 +192,7 @@ async def main():
                 media_id=media_id,
                 comment_text=cfg["comment"],
                 like=True,
-                share_story=True,
+                share_story=False,
                 video_path=str(video_path)
             )
 
